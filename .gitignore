@@ -1,0 +1,23 @@
+# virtual reality
+venv/
+env/
+.env/
+.venv/
+
+# Gotta cache em all
+__pycache__/
+*.py[cod]
+*$spy.class
+
+dist/
+build/
+*.egg-info/
+
+# I use nvim btw
+*.swp
+*.swo
+*~
+
+# Enviro variables
+.env
+*.env
