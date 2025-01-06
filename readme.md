@@ -28,3 +28,12 @@ favourite idea (traffic light control) seems kind of impossible as i'm not sure
 if I can get access to real time traffic data and even if I could I would have 
 to set up a model with a bunch of parameters and that seems like a daunting task.
 So I think it's the financial management system for now.
+
+#### 6th of January, 2025
+Built alot today, made some decision, not happy with all of them, very happy with
+how others turned out. Project is mostly complete in at this point, just have to
+decide if im going to connect it to an actual exchange to trade for the competition 
+or create a simulation to trade off the last couple hundred days with a fake balance
+but real data... decide tomorrow, probably implement both and make a settings menu
+or something. I'm tired, alot of messy code to clean up tomorrow, alot of converting
+to classes i think.
