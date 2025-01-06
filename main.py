@@ -36,6 +36,10 @@ def take_action(position, decision):
             pass
 
 def main():
+    # Update the database
+    data.main()
+
+    
     decision = neural_net()
     position = get_position()
 

@@ -1,8 +1,9 @@
 # TODO - Implement a strategy class/module that selects the assets and timeframe
 # automatically for the data module. ie if low risk is selected, choose less volitile
-# assets and higher time frames like days and weeks to make decisions on.
+# assets and higher time frames like days and weeks to make decisions on. Better yet
+# have the neural net decide if conditions are ripe for high risk or low risk and 
+# adjust strategy accordingly, also auto control risk % amount.
 # TODO - Switch from a csv to a proper db like sqlite or postgres
-
 
 import requests as r
 import csv
@@ -13,12 +14,58 @@ OHLC_URL: str = BASE_URL + "/v5/market/kline"
 
 ASSET_NAME: str = "BTCUSDT"
 TIME_FRAME: str = "D"
+CONTRACT_TYPE: str = "linear"
+MAX_LIMIT: int = 1000
 
 FILE_NAME: str = f"{ASSET_NAME}_{TIME_FRAME}_Data.csv"
 
 
+def test_connection() -> int:
+    """
+    A test to check for internet connection prior to sending requests
+    """
+
+    try:
+        r.get(OHLC_URL)
+    except r.RequestException:
+        print("Trouble retrieving your request, check if the exchange api is up\
+        and running, check your internet connection and double check what you are\
+        requesting")
+        return 0
+    
+    return 1
+
+
+def query_exchange(category: str, symbol: str, interval: str, limit: int) -> list: 
+    """
+    Requests exchange to retreieve current market records for given parameters 
+
+    Params:
+    category - The type of contract to query, (spot, linear, etc)
+    symbol - Also known as ticker, the name of the asset you are looking
+    interval - The timeframe you want to retrieve records for D(day), M(month)
+    60(hourly), etc
+    limit - The number of records to get, 1000 being the max
+
+    Returns:
+    market_data - A list of market records in reverse order such that the oldest
+    records are first and the newest records are last.
+    """
+    
+    parameters: dict = {"category": category, 
+          "symbol": symbol,      
+          "interval": interval,         
+          "limit": limit 
+          }
+
+    response = r.get(OHLC_URL, params = parameters)
+    market_data: list = [row for row in response.json()["result"]["list"]]
+
+    market_data.reverse()
+    return market_data
+
+
 def create_DB() -> None:
-    # TODO - Decide if hard coded params is the way to go or more dynamic approach needed
     """
     Creates a database if one does not yet exist
     """
@@ -30,32 +77,18 @@ def create_DB() -> None:
         # Add the column names to the file 
         new_file.write("date,time,open,high,low,close,volume,utc\n")
     
-    params = {"category": "linear",     
-          "symbol": ASSET_NAME,      
-          "interval": TIME_FRAME,         
-          "limit": 1000                 
-          }
-
-    write_to_DB(params) 
+    market_data: list = query_exchange(CONTRACT_TYPE, ASSET_NAME, TIME_FRAME, MAX_LIMIT)
+    write_to_DB(market_data) 
 
 
-def write_to_DB(parameters: dict) -> None:
-    # TODO - Fix the god damn description! haha
-
+def write_to_DB(market_data: list) -> None:
     """
-    Queries exchange for market info and writes the info to the DB
+    Writes passed in data to the database
 
     Params:
-    parameters - A Dictionary containing the specific.... finish this off later
+    market_data - A list containing market information to be written to the db
     """
 
-    # Retrieve market data, put it all in a list
-    response = r.get(OHLC_URL, params = parameters)
-    market_data: list = [row for row in response.json()["result"]["list"]]
-
-    # Reverse the list so its oldest first, most recent last chronologically
-    market_data.reverse() 
-    
     # Open our DB file and write the contents of the list to the file
     with open(FILE_NAME, "a", newline = "") as file:
         writer = csv.writer(file, delimiter = ",")     
@@ -81,40 +114,47 @@ def write_to_DB(parameters: dict) -> None:
             writer.writerow([date, time, open_price, high_price, low_price, close_price, volume, timestamp])
 
 
-    print(f"{parameters["limit"]} line(s) written to Database")
+    print(f"{len(market_data)} line(s) written to Database")
 
 
 def update_DB():
     """
-    Compares todays date and time with the latest record in the database to 
-    check if the database is up to date or if it needs to retrieve more records
+    Compares database timestamps to current market timestamps to determine how
+    many records are missing from the database that need to be downloaded to 
+    update it to the current market information
     """
-
-    # Get todays date in indentical format to the database for comparison
-    todays_date = dt.datetime.now().strftime("%a-%d-%b-%y")
-
-    # Get the current days date in unix form using UTC from midnight (matches markets time keeping)
-    # This is the most accurate and modular way I can think to measure the difference
-    # between the last entry in the database and the current time and this method
-    # still doesn't account for intraday timeframes yet.
-    utc_todays_date = dt.datetime.strptime(todays_date,"%a-%d-%b-%y")\
-                      .replace(tzinfo=dt.timezone.utc).timestamp()
-
-    print(utc_todays_date)
-
-    print("CHECKING IF DATABASE IS UP TO DATE")
     
-    # Get the date of the last record in the database
-    last_records_date: str = get_last_record()
+    print("CHECKING IF DATABASE IS UP TO DATE")
+    records_to_retrieve = 1 
 
-    if todays_date != last_records_date:
-        print(float(utc_todays_date) - float(last_records_date)) 
+    # Query the exchange to get the lastest data & extract just the unix timestamp
+    lastest_ts = float(query_exchange(CONTRACT_TYPE, ASSET_NAME, TIME_FRAME, 1)[0][0].split(",")[0]) / 1000
+    
+    # Get the last three records from the db (3 to be safe)
+    recent_utc_timestamps: list = get_records(3)
 
-    with open(FILE_NAME, "a", newline = "") as file:
-        pass 
+    if lastest_ts == recent_utc_timestamps[0]:
+        # If the utc ts are the same, update only the latest record to current info
+        delete_records(1)
+
+    else:
+        # Calculate the time difference between each entry 
+        time_difference = recent_utc_timestamps[1] - recent_utc_timestamps[2]
+
+        # Subtract current ts from last db entry ts and divide by the difference
+        # between entries this will give us the number of entries missing
+        records_to_retrieve = int((lastest_ts - recent_utc_timestamps[0]) / time_difference + 1)
+
+        # This is the plus 1 from the above sum we are deleting. This is due to
+        # not assuming we recorded the precise close for the current timeframe 
+        # in the database and therefore will re-record it now we know its closed
+        delete_records(1)
+
+    market_data: list = query_exchange(CONTRACT_TYPE, ASSET_NAME, TIME_FRAME, records_to_retrieve)
+    write_to_DB(market_data)
 
 
-def get_last_record() -> str:
+def get_records(records: int) -> list:
     """
     Queries the database for the last entry and retrieves it's date
 
@@ -123,37 +163,44 @@ def get_last_record() -> str:
     """
     print(f"RETRIEVEING LAST RECORDS FROM CSV")
 
+    date_list = []
+
     with open(FILE_NAME, "r") as file:
         all_lines = file.readlines()
 
-        # get all lines in the db, slice the last line out and split it at the first comma
-        # that will give you the date of the latest record in the db
-        date: str = all_lines[-2:][0].split(",")[7].strip("\n")
+        for i in range(1, records+1):
+            # get all lines in the db, slice the requested lines out, split them
+            # by "," take the last value, strip the newline, isolate the unix ts
+            date_list.append(float(all_lines[-i:][0].split(",")[7].strip("\n")))
 
-    return date 
+    return date_list
 
 
-def delete_records():
-    pass
+def delete_records(records: int):
+    """
+    Rewrites the database file with the last x amount of lines excluded
+
+    Params:
+    records - The number of lines to exclude
+    """
+
+    print(f"DELETING {records} RECORD(S) FROM DATABASE")
+
+    with open(FILE_NAME, "r") as read_file:
+        database = read_file.readlines()
+        with open(FILE_NAME, "w") as fead_rile: # fead_rile... he chuckles to himself
+            fead_rile.writelines(database[: -records])
 
 
 def main():
     # TODO - Decide if user decides params or hardcoded for time being
 
-    if not os.path.exists(FILE_NAME):
-        create_DB()
+    # If there is no trouble connecting to the exchange, run through the logic
+    if test_connection:  
+        if not os.path.exists(FILE_NAME):
+            create_DB()
 
-    #get_last_record()
-    update_DB()
-    print(get_last_record())
-
-    # Must contain type of contract, ticker the timeframe and the amount of records
-    params = {"category": "linear",     # Contract type
-          "symbol": ASSET_NAME,      # Asset ticker or symbol
-          "interval": TIME_FRAME,          # Timeframe to retireve data from
-          "limit": 1                 # Number of records to retrieve
-          }
-    # write_to_DB(params)
+        update_DB()
 
 if __name__ == "__main__":
     main()
