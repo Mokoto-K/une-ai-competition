@@ -6,168 +6,197 @@
 # market(i suspect this is incredibly difficult and unsolvable, edge is hard to, 
 # find) for now hardcorde basic things, rework once solution is up and running.
 
-import pandas as pd
-from pandas._libs.tslibs.fields import month_position_check # "standing on the shoulders of giants - Issac Newton"
+# TODO - Implement with no pandas, just numpy
+
+import pandas as pd #""standing on the shoulders of giants - Issac Newton"... for now" - me
 from mykitlearn import split_test_train, encode_labeler # Screw the giants!
 
-# Location of our Database file
-db_path: str = "./BTCUSDT_D_Data.csv"
-
-# Load our database as a df 
-market_data: pd.DataFrame = pd.read_csv(db_path)
-
-# Assign quick refs to our main data points in the dataframe
-price_open = market_data.open
-price_high= market_data.high
-price_low= market_data.low
-price_close= market_data.close
-price_volume= market_data.volume
-
-
-# TODO - All these features can be rolled into one for loop....do that pls
-
 # Feature "engineering" (like im building bridges out here!)-------------------
+class MarketFeatures:
+    def __init__(self, db_path: str) -> None:
+        """
+        Initialize the MarketFeatures class for data loading and preprocessing
+        
+        Params:
+        db_path - a file path that leads to the data you with to process
+        """
+        self.db_path = db_path
+        self.market_data = pd.read_csv(db_path)
+        self.encoders = {"day" : encode_labeler(),
+                        "month": encode_labeler(),
+                        "target": encode_labeler()
+                        }
 
-# Creating labels for our NN to use for training, if market close is higher then
-# open, it was a buy, otherwise it was a sell.
-def create_labels() -> list:
-    target = ["long" if price_close[i] > price_open[i] else "short" 
-        for i in range(len(price_open))]
-
-    return target
-
-
-market_data["target"] = create_labels()
-
-
-# Create day and month features------------------------------------------------
-def process_dates() -> tuple:
-    dates = market_data.date
-    day_list: list = []
-    month_list: list = []
-
-    for row in dates:
-        # working the date string from the db, separating days and months in the df
-        day: str = row.split("-")[0]
-        month: str = row.split("-")[2]
-
-        day_list.append(day)
-        month_list.append(month)
-
-    return day_list, month_list
+        # Assign quick refs to our main data points in the dataframe
+        self.price_open = self.market_data.open
+        self.price_high = self.market_data.high
+        self.price_low = self.market_data.low
+        self.price_close = self.market_data.close
+        self.price_volume = self.market_data.volume
+        self.dates = self.market_data.date
 
 
-market_data["day"], market_data["month"] = process_dates() 
+    def create_target_labels(self) -> None:
+        """
+        Creates binary labels for the dataset to be used in training
+        """
+        target: list = []
 
-# Don't need the old date or time, just the new day & month for these features
-market_data = market_data.drop(["date", "time"], axis = 1)
-
-
-# Creating daily open change-------------------nvim---------------btw----------
-def calc_daily_change() -> list:
-    daily_change: list = [0] # explanation below
-
-    for row in range(len(price_open)):
-
-        # Skipping the first element initialzed to 0, this is due to the offset of
-        # calculating one days open to the next, we end up one short in the list
-        if row == 0:
-            continue
+        for i in range(len(self.price_open)):
+            # If market close was higher than open, it was a buy, otherwise a sell.
+            target.append("long" if self.price_close[i] > self.price_open[i] else "short") 
     
-        # percentage change for the timeframe
-        change: float = (price_open[row] - price_open[row - 1]) / price_open[row -1] * 100
-        daily_change.append(round(change,8))
-
-    return daily_change
+        self.market_data["target"] = target 
 
 
-market_data["daily_change"] = calc_daily_change() 
+    def process_dates(self) -> None:
+        """
+        Strips out the date str from the data and splits it into day and month
+        """
+        
+        day_list: list = []
+        month_list: list = []
+    
+        for row in self.dates:
+            # working the date string from the db, separating days and months in the df
+            day: str = row.split("-")[0]
+            month: str = row.split("-")[2]
+    
+            day_list.append(day)
+            month_list.append(month)
+    
+        self.market_data["day"], self.market_data["month"] = day_list, month_list 
+    
+        # Don't need the old date or time anymore
+        self.market_data.drop(["date", "time"], axis = 1, inplace = True)
 
 
-# Creating volitility----------------arch-user-btw---------not-a-furry---------
-
-# TODO - Consider an offset to help predict current day
-def calc_volitility() -> list:
-    volitility: list = [0]
-
-    for row in range(len(price_high)):
-
-        if row == 0:
-            continue
-
-        vol: float = (price_high[row - 1] - price_low[row - 1]) / 100
-        volitility.append(vol)
-
-    return volitility
-
-market_data["volitility"] = calc_volitility()
+    def calc_daily_change(self) -> None:
+        """ 
+        Calculate the percentage change between each time gap 
+        """
+    
+        daily_change: list = [0] # open to open is two data entries, offset by 1
+    
+        for row in range(1, len(self.price_open)):
+    
+            # percentage change for the timeframe
+            change: float = (self.price_open[row] - self.price_open[row - 1]) / self.price_open[row -1] * 100
+            daily_change.append(round(change,8))
+    
+        self.market_data["daily_change"] = daily_change
 
 
-# Create volume col------------------------------------------------------------
-def calc_volume() -> list:
-    volume: list = [0]
+    # TODO - Consider an offset to help predict current day
+    def calc_volitility(self) -> None:
+        """
+        Calculates the volitity of the each data entry
+        """
 
-    for row in range(len(price_volume)):
+        volitility: list = [0]
+    
+        for row in range(1, len(self.price_high)):
+    
+            vol: float = (self.price_high[row - 1] - self.price_low[row - 1]) / 100
+            volitility.append(vol)
+    
+    
+        self.market_data["volitility"] = volitility 
 
-        if row == 0:
-            continue
 
-        volume.append(price_volume[row - 1] / 100000000)
+    # TODO - Change what's being diveded by and use a standard scaling technique
+    def calc_volume(self) -> None:
+        """
+        Rationalizes the volume for each data entry
+        """
+
+        volume: list = [0]
+    
+        for row in range(1, len(self.price_volume)):
+    
+            volume.append(self.price_volume[row - 1] / 100000000)
+
+        self.market_data["volume"] = volume 
 
 
-    return volume
-
-
-market_data["volume"] = calc_volume() 
-
-# TODO - All these features can be rolled into one for loop....do that pls
 # TODO - MOAR FEATURES, such as:
 # TODO - Price moving average
 # TODO - % change moving average
 # TODO - volitility Moving average
 # TODO - Price to standard dev distance
 
-# Prep the dataframe for training----------------------------------------------
+# ----------------------------------Data prepping-------------------------------
 
-# Encode all str features + the labels
-    # TODO - should move this dict out of this function
-encoders = {"day" : encode_labeler(),
-                "month": encode_labeler(),
-                "target": encode_labeler()
-                }
+    def encode_features(self) -> None:
+        """
+        Handles encoding of all categorical features
+        """
 
-for feature, encoder in encoders.items():
-    market_data[feature] = encoder.fit_transform(market_data[feature])
+        for feature, encoder in self.encoders.items():
+            self.market_data[feature] = encoder.fit_transform(self.market_data[feature])
 
 
 # Scale the features
 # Coming soon
 
-# Feature selection
-def prep_data() -> tuple:
-    selected_features: list =["day", "month", "daily_change", "volitility", 
-                              "volume", "target"] 
 
-    X: pd.DataFrame = market_data.filter(selected_features)
+    # Feature selection
+    def prep_data(self, test_size: float = 0.2, random_state: int = 42) -> tuple:
+        """
+        Prepares the data for training by selecting features to train on as well
+        as splitting the data into different sets for training, testing and validation
 
-    X_full, X_test, y_full, y_test = split_test_train(X.drop("target", axis = 1), 
-                                                  X.target,
-                                                  test_size = 0.2, 
-                                                  random_state = 42)
+        Params:
+        test_size - The proportion of the data segmented away for testing only
+        random_state - Set the random seed for the shuffling process when splitting
+                       the data, set to ensure consistent results.
+        """
 
-    # The datasets used to train and test the NN
-    X_val, X_train = X_full[:100], X_full[100:]
-    y_val, y_train = y_full[:100], y_full[100:]
+        selected_features: list =["day", "month", "daily_change", "volitility", 
+                                  "volume", "target"] 
     
-    return X_val, X_train, X_test, y_val, y_train, y_test
+        X = self.market_data.filter(selected_features)
+    
+        X_full, X_test, y_full, y_test = split_test_train(X.drop("target", axis = 1), 
+                                                      X.target,
+                                                      test_size = test_size, 
+                                                      random_state = random_state)
+    
+        # The datasets used to train and test the NN
+        X_val, X_train = X_full[:100], X_full[100:]
+        y_val, y_train = y_full[:100], y_full[100:]
+        
+        return X_train, X_test, X_val, y_train, y_test, y_val
+
+    
+    def simulation_data(self, simulations: int):
+        """
+        Used to run a simulation of the market if i choose to implement it...
+        """
+        selected_features: list =["day", "month", "daily_change", "volitility", 
+                                  "volume"]
+
+        return self.market_data[-simulations:].filter(selected_features)
 
 
-def get_latest_values():
-    # The set of values to predict the current market decision, slicing out the 
-    # target from the selected_features
-    selected_features: list =["day", "month", "daily_change", "volitility", 
-                              "volume"]
-    return market_data[-1:].filter(selected_features)
+    def get_latest_values(self):
+        selected_features: list =["day", "month", "daily_change", "volitility", 
+                                  "volume"]
+
+        return self.market_data[-1:].filter(selected_features)
+
+
+    def process_all_features(self) -> None:
+        """
+        Applied all features and database maniuplations at once
+        """
+
+        self.create_target_labels()
+        self.process_dates()
+        self.calc_daily_change()
+        self.calc_volitility()
+        self.calc_volume()
+        self.encode_features()
 
 
 if __name__ == "__main__":

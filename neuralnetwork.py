@@ -6,8 +6,25 @@ import numpy as np
 class NeuralNetwork:
     
     def __init__(self, X, y, layers, task = 'binary', learning_rate=0.01, l2=0.0):
-        self.X = X
-        self.y = y
+        
+        # Adding checks for what type of data is being passed in as bugs persist
+        self.X = X.to_numpy() if hasattr(X, "to_numpy") else np.array(X)
+        temp_y = y.to_numpy() if hasattr(y, "to_numpy") else np.array(y)
+        
+
+        # Reshape y as needed depending on the task at hand, less reliance on input shapes
+        # I feel like i could just auto reshape here but not smart enough to know how it
+        # effects all types of models and y inputs in the future
+        if len(temp_y.shape) == 1 or (len(temp_y.shape) == 2 and temp_y.shape[1] == 1):
+            if task == "binary":
+                self.y = temp_y.reshape(-1, 1)
+            elif task == "multiclass":
+                self.y = temp_y
+            else: # For regression
+                self.y = temp_y.reshape(-1, 1)
+        else:
+            self.y = temp_y
+
         self.layers = layers
         self.learning_rate = learning_rate
         self.params = {}
@@ -15,7 +32,7 @@ class NeuralNetwork:
         self.loss_history = []
         self.l2 = l2
         
-        
+        # setting which output layer and loss functions to use depending on task 
         if task == 'binary':
             self.output_activation = self.sigmoid
             self.loss_function = self.binary_cross_entropy
@@ -40,6 +57,7 @@ class NeuralNetwork:
 
         input_dimensions = self.X.shape[1]
         
+        # Setting initial weights and bias
         for i, layer in enumerate(self.layers):
             layer_number = f"layer_{i+1}"
             neurons = layer["neurons"]
@@ -212,6 +230,10 @@ class NeuralNetwork:
         """
         Makes a prediction on a passed in set of features.
         """
+        
+        # Add protections for X being misshaped
+        X = X.reshape(1, -1) if len(X.shape) == 1 else X
+
         A = X
         for idx, layer in enumerate(self.layers):
             layer_id = f"layer_{idx + 1}"

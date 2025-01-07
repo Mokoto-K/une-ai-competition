@@ -37,3 +37,11 @@ or create a simulation to trade off the last couple hundred days with a fake bal
 but real data... decide tomorrow, probably implement both and make a settings menu
 or something. I'm tired, alot of messy code to clean up tomorrow, alot of converting
 to classes i think.
+
+#### 7th of January, 2025
+Today I want to finish all main functionality off and have everything that has 
+been made so far, presentable. I want to change the features module into a class 
+so that it can run multiple csv, I could just implement a DB that stores it all 
+but that might take longer and i'd ultimately still have to incorporate some way 
+of dealing with each individual asset class, so this is good ground work to be built
+on top of later. I'll try remember to check in as the day goes....

@@ -6,48 +6,58 @@
 # TODO - Cli logic
 # TODO - indocrinate the impure to nvim
 
-import data
-from features import prep_data, get_latest_values 
-from neuralnet import NeuralNetwork
-
+from data import Database
+from features import MarketFeatures
+from neuralnetwork import NeuralNetwork
+from strategy import default_strategy
+from simulation import run_simulation
+#FILE_PATH = "./BTCUSDT_D_Data.csv"
 
 def get_data():
-    data.main()
+    data = Database(time_frame="D")
+    data.run()
 
 
-def neural_net():
-    # TODO - Change the X and y from features to be numpy arrays.
-    # TODO - I think this needs to move outta here to a training class/module
-    """
-    Currently trains a neural network on the databases data and predicts the 
-    next decision in the market.
-
-    Returns:
-    position - Either a 1 or 0 depending on the networks decision on the latest 
-               data
-    """
-
-    # Structure for the nn
-    architecture = [{"neurons": 5, "activation": "relu"},
-                    {"neurons": 5, "activation": "relu"},
-                    {"neurons": 3, "activation": "relu"},
-                    {"neurons": 2, "activation": "relu"},
-                    {"neurons": 1, "activation": "sigmoid"}
-                    ]
-    
-    X_val, X_train, X_test, y_val, y_train, y_test = prep_data()
-    decision = NeuralNetwork(X_train.to_numpy(), y_train.to_numpy().reshape(-1, 1), 
-                             task = "binary", 
-                             layers = architecture,
-                             learning_rate = 0.1)
-
-    decision.train(1000)
-
-    # predictions = decision.predict(X_test[:5])
-    #
-    # print(f"nn predicted: {predictions}, actual was: {y_test[:5]}")
-    latest_values = get_latest_values() 
-    return 1 if decision.predict(latest_values) > 0.5 else 0
+# def neural_net():
+#     # TODO - Change the X and y from features to be numpy arrays.
+#     # TODO - I think this needs to move outta here to a training class/module
+#     """
+#     Currently trains a neural network on the databases data and predicts the 
+#     next decision in the market.
+#
+#     Returns:
+#     position - Either a 1 or 0 depending on the networks decision on the latest 
+#                data
+#     """
+#     # TODO - Temporarily putting the data and nn structure in here, needs its own class
+#
+#     data = MarketFeatures(FILE_PATH)
+#     data.process_all_features()
+#
+#     # Get the data for the nn
+#     X_train, X_test, X_val, y_train, y_test, y_val = data.prep_data()
+#
+#     # Structure for the nn
+#     architecture = [{"neurons": 5, "activation": "relu"},
+#                     {"neurons": 5, "activation": "relu"},
+#                     {"neurons": 3, "activation": "relu"},
+#                     {"neurons": 2, "activation": "relu"},
+#                     {"neurons": 1, "activation": "sigmoid"}
+#                     ]
+#
+#     # INitialize the bad boi
+#     decision = NeuralNetwork(X_train, y_train, 
+#                              task = "binary", 
+#                              layers = architecture,
+#                              learning_rate = 0.1)
+#
+#     # Train him
+#     decision.train(1000)
+#
+#     # Get the next decision to take 
+#     latest_values = data.get_latest_values() 
+#     print(latest_values)
+#     return 1 if decision.predict(latest_values) > 0.5 else 0
 
 
 def get_position() -> str:
@@ -91,19 +101,21 @@ def take_action(position, decision) -> None:
         
 def main():
     # TODO - Hide all of the print statements for training the neural net
-    
-
+    # data = Database(time_frame="1")
+    # data.run()
+    # default_strategy()
+    run_simulation()
     # Update the database
     #get_data()
-    print(get_latest_values)
+
     # Get the AI's decision on the market
-    decision = neural_net()
+    # decision = neural_net()
     #print(decicion) 
 
     # Get the current position we are in
-    position = get_position()
+    # position = get_position()
     
-    take_action(position, decision)
+    # take_action(position, decision)
 
 
 if __name__ == "__main__":
