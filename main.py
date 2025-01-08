@@ -105,7 +105,7 @@ def take_action(decision) -> None:
 def main():
 
     sim = True 
-    risk = "D"
+    risk = "1"
 
     if sim:
         risk = "1" # get_risk
