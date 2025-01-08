@@ -1,4 +1,6 @@
 # TODO - Fix all documentation when i have time
+# TODO - Remove post only EVENTUALLYT
+
 import requests
 import time
 import hashlib
@@ -90,10 +92,15 @@ class Exchange:
         params=f'category={category}&symbol={symbol}'
         
         result = self._make_request("GET", "/v5/position/list", params)
+         
+        # print returned result to get all information about position
+        returned_result = result.json()["result"]["list"][0]#["side"]
 
-        return result.json()["result"]["list"][0]["side"]
+        direction = returned_result["side"]
+        size = returned_result["size"]
+        return direction, size
 
-
+    # TODO - REMOVE POST ONLY EVENTUALLYT
     def create_order(self, category, symbol, side, order_type, qty, price, time_in_force="PostOnly"):
         params = json.dumps({
                             "category": category,
@@ -121,19 +128,3 @@ class Exchange:
 
 
 
-# endpoint="/v5/order/create"
-# method="POST"
-# orderLinkId=uuid.uuid4().hex
-# params='{"category":"linear","symbol": "BTCUSDT","side": "Buy","positionIdx": 0,"orderType": "Limit","qty": "0.001","price": "10000","timeInForce": "GTC","orderLinkId": "' + orderLinkId + '"}'
-# HTTP_Request(endpoint,method,params,"Create")
-
-#Get unfilled Orders
-
-
-
-
-#Cancel Order
-# endpoint="/v5/order/cancel"
-# method="POST"
-# params='{"category":"linear","symbol": "BTCUSDT","orderLinkId": "'+orderLinkId+'"}'
-# HTTP_Request(endpoint,method,params,"Cancel")

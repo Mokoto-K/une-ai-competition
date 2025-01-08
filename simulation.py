@@ -4,12 +4,12 @@ from features import DataFeatures
 from strategy import build_strategy 
 from time import sleep
 
-def run_simulation(risk):
+def run_simulation(strategy):
 
     # Neural network
-    nn, data = build_strategy(risk)
+    nn, data = strategy 
 
-    SIMULATIONS = 1000
+    SIMULATIONS = 10
     sim_data =  data.simulation_data(SIMULATIONS) 
     
     # Market open and closes

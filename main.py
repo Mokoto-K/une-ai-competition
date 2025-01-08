@@ -1,3 +1,12 @@
+# TODO - Fix up simulation class, pass in nn and data
+# TODO - Hide all of the print statements for training the neural net
+# TODO - Finish of logic for decisions with real account
+# TODO - Look at what a test acct does and see if it should connect to that instead of real
+# TODO - implement size if test acct is used.
+# TODO - Go through each file and look at the todos.
+
+
+
 # TODO - Implement everything from the cli, add a menu to check for different
 # things like the trade you are in, profit?, etc
 # TODO - Hide keys, also provide example api-key implementation?
@@ -10,6 +19,8 @@ from features import DataFeatures
 from simulation import run_simulation
 from strategy import build_strategy 
 from exchange import Exchange
+
+load_dotenv()
 
 def get_risk() -> str:
     """
@@ -48,7 +59,7 @@ def get_position() -> str:
     return position 
 
 
-def take_action(position, decision) -> None:
+def take_action(decision) -> None:
     """
     Depending on the ai's decision and the current position in the market, an 
     action will be taken to either enter a position, maintain a position or 
@@ -58,52 +69,64 @@ def take_action(position, decision) -> None:
     position - The current direction we are in the market
     decision - The Neural networks decision on where to do next
     """
-    # Translate the nn decision to a market action
-    decision = "long" if decision == 1 else "short"
-
-    if position != "":
-        if position == decision:
-            print(f"We are in a {position} and will remain {decision}")
-        else:
-            print(f"We are closing our {position} position")
-            # close_position() 
-    else:
-        print(f"Not in any position, Entering a {decision}")
-        # enter_position()
-
-        
-def main():
-
-    load_dotenv()
-    # TODO - Hide all of the print statements for training the neural net
-    # run_simulation()
-    # print("Welcome to the casino... essentially\n")
-    #
-    # choice = None
-    # while choice == None:
-    #     inp = input("press s for the simulation or r for real account\n")
-    #
-    #     if inp.lower() == "s":
-    #         run_simulation(get_risk())
-    #     elif inp.lower() == "r":
-    #         risk = get_risk()
-    #     else:
-    #         print("Please check input character and try again\n")
-    
 
     key: str = os.getenv("API_KEY")
     secret: str = os.getenv("API_SECRET")
     bybit = Exchange(key, secret)
 
-    nn, data = build_strategy("1")
-    latest_value = data.get_latest_values()
-    decision = nn.predict(latest_value)
+    # Translate the nn decision to a market action
+    decision = "Buy" if decision == 1 else "Sell"
 
-    position = bybit.get_position(symbol="BTC-28MAR25")
-    take_action(position, decision)
+    direction = "Buy" if decision == "long" else "Sell"
 
-    bybit.create_order("linear", "BTCUSDT", "Buy", "Limit", "0.05", "72000")
-    bybit.cancel_all()
+    position_details = bybit.get_position(symbol="BTC-28MAR25")
+    position = position_details[0]
+
+    if position != "":
+        if position == decision:
+            print(f"We are in a {position} and will remain {decision}")
+
+        else:
+            print(f"We are closing our {position} position")
+            size = position_details[1]
+            
+            # TODO - Replace with market order with symbol, etc determined
+            # TODO - remember to remove postOnl;y eventually too
+            bybit.create_order("linear", "BTCUSDT", decision, "Limit", size, "72000")
+            bybit.cancel_all() 
+    else:
+        print(f"Not in any position, Entering a {decision}")
+
+        # TODO - Replace with market orders with symbol and size determined
+        bybit.create_order("linear", "BTCUSDT", decision, "Limit", "0.05", "72000")
+        # TODO - Remove this once testing is done
+        bybit.cancel_all()
+        
+def main():
+
+    sim = True 
+    risk = "D"
+
+    if sim:
+        risk = "1" # get_risk
+        run_simulation(build_strategy(risk))
+    else:
+        nn, data = build_strategy("1")
+
+        latest_value = data.get_latest_values()
+        decision = nn.predict(latest_value)
+        risk = "1"
+
+        take_action(decision)
+
+    # key: str = os.getenv("API_KEY")
+    # secret: str = os.getenv("API_SECRET")
+    # bybit = Exchange(key, secret)
+    #
+    # position = bybit.get_position(symbol="BTC-28MAR25")
+    # print(position)
+    # bybit.create_order("linear", "BTCUSDT", "Buy", "Limit", "0.05", "72000")
+    # bybit.cancel_all()
     
 
 if __name__ == "__main__":
