@@ -1,63 +1,36 @@
 # TODO - Implement everything from the cli, add a menu to check for different
 # things like the trade you are in, profit?, etc
-# TODO - strategies class for potential different risk strategies
-# TODO - Build the api to the exchange
 # TODO - Hide keys, also provide example api-key implementation?
 # TODO - Cli logic
 # TODO - indocrinate the impure to nvim
-
-from data import Database
-from features import MarketFeatures
-from neuralnetwork import NeuralNetwork
-from strategy import default_strategy
+import os
+from dotenv import load_dotenv
+from database import Database
+from features import DataFeatures
 from simulation import run_simulation
-#FILE_PATH = "./BTCUSDT_D_Data.csv"
+from strategy import build_strategy 
+from exchange import Exchange
 
-def get_data():
-    data = Database(time_frame="D")
-    data.run()
+def get_risk() -> str:
+    """
+    Gets the users choice of risk they would like to implement 
 
+    Returns:
+    risk - Either 1 for high risk of D for low risk, currently only two options
+           representing timeframe intervals that the nn looks over in the data
+    """
 
-# def neural_net():
-#     # TODO - Change the X and y from features to be numpy arrays.
-#     # TODO - I think this needs to move outta here to a training class/module
-#     """
-#     Currently trains a neural network on the databases data and predicts the 
-#     next decision in the market.
-#
-#     Returns:
-#     position - Either a 1 or 0 depending on the networks decision on the latest 
-#                data
-#     """
-#     # TODO - Temporarily putting the data and nn structure in here, needs its own class
-#
-#     data = MarketFeatures(FILE_PATH)
-#     data.process_all_features()
-#
-#     # Get the data for the nn
-#     X_train, X_test, X_val, y_train, y_test, y_val = data.prep_data()
-#
-#     # Structure for the nn
-#     architecture = [{"neurons": 5, "activation": "relu"},
-#                     {"neurons": 5, "activation": "relu"},
-#                     {"neurons": 3, "activation": "relu"},
-#                     {"neurons": 2, "activation": "relu"},
-#                     {"neurons": 1, "activation": "sigmoid"}
-#                     ]
-#
-#     # INitialize the bad boi
-#     decision = NeuralNetwork(X_train, y_train, 
-#                              task = "binary", 
-#                              layers = architecture,
-#                              learning_rate = 0.1)
-#
-#     # Train him
-#     decision.train(1000)
-#
-#     # Get the next decision to take 
-#     latest_values = data.get_latest_values() 
-#     print(latest_values)
-#     return 1 if decision.predict(latest_values) > 0.5 else 0
+    risk = None
+    while risk == None:
+        user = input("Enter the risk you would like to take:\n 'high' or 'low'")
+        if user == "high":
+            risk = "1"
+        elif user == "low":
+            risk = "D"
+        else:
+            print("Please check you input a valid option\n")
+
+    return risk
 
 
 def get_position() -> str:
@@ -88,7 +61,7 @@ def take_action(position, decision) -> None:
     # Translate the nn decision to a market action
     decision = "long" if decision == 1 else "short"
 
-    if position != "none":
+    if position != "":
         if position == decision:
             print(f"We are in a {position} and will remain {decision}")
         else:
@@ -100,23 +73,38 @@ def take_action(position, decision) -> None:
 
         
 def main():
+
+    load_dotenv()
     # TODO - Hide all of the print statements for training the neural net
-    # data = Database(time_frame="1")
-    # data.run()
-    # default_strategy()
-    run_simulation()
-    # Update the database
-    #get_data()
-
-    # Get the AI's decision on the market
-    # decision = neural_net()
-    #print(decicion) 
-
-    # Get the current position we are in
-    # position = get_position()
+    # run_simulation()
+    # print("Welcome to the casino... essentially\n")
+    #
+    # choice = None
+    # while choice == None:
+    #     inp = input("press s for the simulation or r for real account\n")
+    #
+    #     if inp.lower() == "s":
+    #         run_simulation(get_risk())
+    #     elif inp.lower() == "r":
+    #         risk = get_risk()
+    #     else:
+    #         print("Please check input character and try again\n")
     
-    # take_action(position, decision)
 
+    key: str = os.getenv("API_KEY")
+    secret: str = os.getenv("API_SECRET")
+    bybit = Exchange(key, secret)
+
+    nn, data = build_strategy("1")
+    latest_value = data.get_latest_values()
+    decision = nn.predict(latest_value)
+
+    position = bybit.get_position(symbol="BTC-28MAR25")
+    take_action(position, decision)
+
+    bybit.create_order("linear", "BTCUSDT", "Buy", "Limit", "0.05", "72000")
+    bybit.cancel_all()
+    
 
 if __name__ == "__main__":
     main()

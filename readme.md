@@ -45,3 +45,18 @@ so that it can run multiple csv, I could just implement a DB that stores it all
 but that might take longer and i'd ultimately still have to incorporate some way 
 of dealing with each individual asset class, so this is good ground work to be built
 on top of later. I'll try remember to check in as the day goes....
+
+#### 8th of January, 2025
+Today was rough, I rewrote the api to exchange like 4 different times due to getting
+something different wrong each time... the auth killed me... so I thought, turned 
+out bybit (the exchange we are going to use) handles paramters and urls a bit 
+different to what I thought.
+
+At a point of the project where all the pieces are there, it's about assembling
+them in the right order or fashion.... haven't quite come to the conclusion on 
+how that should be yet.
+
+Maybe more tomorrow, or maybe some C while I mull over the decisions.
+
+:wq
+

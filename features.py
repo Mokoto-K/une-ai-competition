@@ -12,7 +12,7 @@ import pandas as pd #""standing on the shoulders of giants - Issac Newton"... fo
 from mykitlearn import split_test_train, encode_labeler # Screw the giants!
 
 # Feature "engineering" (like im building bridges out here!)-------------------
-class MarketFeatures:
+class DataFeatures:
     def __init__(self, db_path: str) -> None:
         """
         Initialize the MarketFeatures class for data loading and preprocessing

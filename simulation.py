@@ -1,21 +1,18 @@
 # TODO - Turn this into a presentable file.... 
 
-from features import MarketFeatures
-from strategy import default_strategy
+from features import DataFeatures
+from strategy import build_strategy 
 from time import sleep
 
-def run_simulation():
+def run_simulation(risk):
 
     # Neural network
-    nn, file_path = default_strategy()
+    nn, data = build_strategy(risk)
 
     SIMULATIONS = 1000
-    data = MarketFeatures(file_path)
-    data.process_all_features()
     sim_data =  data.simulation_data(SIMULATIONS) 
     
     # Market open and closes
-    
     price_opens = data.price_open[-SIMULATIONS:]
     price_closes = data.price_close[-SIMULATIONS:]
     daily_change = sim_data["daily_change"]
@@ -76,4 +73,4 @@ def run_simulation():
 
 
 if __name__ == "__main__":
-    pass
+    run_simulation() 
