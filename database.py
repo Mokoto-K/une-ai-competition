@@ -1,8 +1,3 @@
-# TODO - Implement a strategy class/module that selects the assets and timeframe
-# automatically for the data module. ie if low risk is selected, choose less volitile
-# assets and higher time frames like days and weeks to make decisions on. Better yet
-# have the neural net decide if conditions are ripe for high risk or low risk and 
-# adjust strategy accordingly, also auto control risk % amount.
 # TODO - Switch from a csv to a proper db like sqlite or postgres
 
 import requests as r
@@ -179,7 +174,7 @@ class Database:
         Returns:
         date - The date for the last line in the database
         """
-        print(f"RETRIEVEING LAST RECORDS FROM CSV")
+        print(f"RETRIEVEING LAST RECORDS FROM DATABASE")
     
         date_list = []
     
@@ -202,7 +197,7 @@ class Database:
         records - The number of lines to exclude
         """
     
-        print(f"DELETING {count} RECORD(S) FROM DATABASE")
+        print(f"UPDATING {count} RECORD(S) FROM DATABASE")
     
         with open(self.file_name, "r") as read_file:
             database = read_file.readlines()
@@ -218,15 +213,17 @@ class Database:
         
 
     def run(self):
-        # TODO - Decide if user decides params or hardcoded for time being
-        # TODO - maybe clean up the logic here and make test return a boolean insted 
-        # If there is no trouble connecting to the exchange, run through the logic
+        print("---------------------------------------------------------")
+        print("---------------------------------------------------------")
         if self.test_connection:  
             if not os.path.exists(self.file_name):
                 self.create_DB()
             else: 
                 self.update_DB()
     
+        print("---------------------------------------------------------")
+        print("---------------------------------------------------------\n")
+
     
 if __name__ == "__main__":
     pass

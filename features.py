@@ -8,6 +8,9 @@
 
 # TODO - Implement with no pandas, just numpy
 
+# TODO - Self.selected_features to make it simplier when adding new feauters to The
+# dataset, one less place to update values... or three less places
+
 import pandas as pd #""standing on the shoulders of giants - Issac Newton"... for now" - me
 from mykitlearn import split_test_train, encode_labeler # Screw the giants!
 
@@ -34,7 +37,7 @@ class DataFeatures:
         self.price_close = self.market_data.close
         self.price_volume = self.market_data.volume
         self.dates = self.market_data.date
-
+        self.time = self.market_data.time
 
     def create_target_labels(self) -> None:
         """
@@ -67,8 +70,26 @@ class DataFeatures:
     
         self.market_data["day"], self.market_data["month"] = day_list, month_list 
     
-        # Don't need the old date or time anymore
-        self.market_data.drop(["date", "time"], axis = 1, inplace = True)
+        # Don't need the old date 
+        # self.market_data.drop(["date"], axis = 1, inplace = True)
+
+
+    def process_time(self) -> None:
+        
+        hours_list = []
+        minutes_list = []
+
+        for row in self.time:
+            hour: int = int(row.split(":")[0]) 
+            minutes: int = int(row.split(":")[1])
+            
+            hours_list.append(hour)
+            minutes_list.append(minutes)
+        
+        self.market_data["hour"], self.market_data['minute'] = hours_list, minutes_list
+
+        # Remove the old time data
+        # self.market_data.drop(["time"], axis = 1, inplace = True)
 
 
     def calc_daily_change(self) -> None:
@@ -152,7 +173,7 @@ class DataFeatures:
                        the data, set to ensure consistent results.
         """
 
-        selected_features: list =["day", "month", "daily_change", "volitility", 
+        selected_features: list =["day", "month","daily_change", "volitility", 
                                   "volume", "target"] 
     
         X = self.market_data.filter(selected_features)
@@ -180,7 +201,7 @@ class DataFeatures:
 
 
     def get_latest_values(self):
-        selected_features: list =["day", "month", "daily_change", "volitility", 
+        selected_features: list =["day", "month","daily_change", "volitility", 
                                   "volume"]
 
         return self.market_data[-1:].filter(selected_features)
@@ -193,6 +214,7 @@ class DataFeatures:
 
         self.create_target_labels()
         self.process_dates()
+#        self.process_time()
         self.calc_daily_change()
         self.calc_volitility()
         self.calc_volume()
@@ -200,4 +222,6 @@ class DataFeatures:
 
 
 if __name__ == "__main__":
+    #feat = DataFeatures("./BTCUSDT_1_Data.csv")
     pass
+

@@ -1,3 +1,8 @@
+# TODO - this may need to be a class, figure that out fast
+# TODO - add ability for risk to adjust % size to allocate for trading
+# TODO - Have the nural net decide what risk strategy based on market conditions
+# TODO - :wq
+
 from features import DataFeatures
 from neuralnetwork import NeuralNetwork
 from database import Database

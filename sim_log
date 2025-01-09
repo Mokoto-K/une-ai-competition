@@ -1,0 +1,1016 @@
+---------------------------------------------------------
+---------------------------------------------------------
+CHECKING IF DATABASE IS UP TO DATE
+RETRIEVEING LAST RECORDS FROM DATABASE
+UPDATING 1 RECORD(S) FROM DATABASE
+1 line(s) written to Database
+---------------------------------------------------------
+---------------------------------------------------------
+
+Thinking of what to do...
+
+Found a solution!
+
+----------------STARTING UP SIMULATION-------------------
+---------------------------------------------------------
+Decision 1
+Date: Wed-02-Oct-24
+Account opening bal: $100,000.00
+Current Position: None
+Decision: Opening a short @ $60,790.00
+Account Closing Bal: $100,000.00
+Trade Profit/Loss: -
+Total Profit/Loss: $0.00 (0.0%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 2
+Date: Thu-03-Oct-24
+Account opening bal: $100,000.00
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $100,000.00
+Trade Profit/Loss: -
+Total Profit/Loss: $0.00 (0.0%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 3
+Date: Fri-04-Oct-24
+Account opening bal: $100,000.00
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $100,000.00
+Trade Profit/Loss: -
+Total Profit/Loss: $0.00 (0.0%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 4
+Date: Sat-05-Oct-24
+Account opening bal: $100,000.00
+Current Position: Short
+Decision: Closing short @ $62,064.00
+Account Closing Bal: $100,637.00
+Trade Profit/Loss: $637.00 (0.64%)
+Total Profit/Loss: $637.00 (0.64%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 5
+Date: Sun-06-Oct-24
+Account opening bal: $100,637.00
+Current Position: None
+Decision: Opening a long @ $62,035.00
+Account Closing Bal: $100,637.00
+Trade Profit/Loss: -
+Total Profit/Loss: $637.00 (0.64%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 6
+Date: Mon-07-Oct-24
+Account opening bal: $100,637.00
+Current Position: Long
+Decision: Remain Long
+Account Closing Bal: $100,637.00
+Trade Profit/Loss: -
+Total Profit/Loss: $637.00 (0.64%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 7
+Date: Tue-08-Oct-24
+Account opening bal: $100,637.00
+Current Position: Long
+Decision: Closing long @ $62,191.00
+Account Closing Bal: $100,715.00
+Trade Profit/Loss: $78.00 (0.08%)
+Total Profit/Loss: $715.00 (0.72%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 8
+Date: Wed-09-Oct-24
+Account opening bal: $100,715.00
+Current Position: None
+Decision: Opening a long @ $62,121.00
+Account Closing Bal: $100,715.00
+Trade Profit/Loss: -
+Total Profit/Loss: $715.00 (0.72%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 9
+Date: Thu-10-Oct-24
+Account opening bal: $100,715.00
+Current Position: Long
+Decision: Remain Long
+Account Closing Bal: $100,715.00
+Trade Profit/Loss: -
+Total Profit/Loss: $715.00 (0.72%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 10
+Date: Fri-11-Oct-24
+Account opening bal: $100,715.00
+Current Position: Long
+Decision: Closing long @ $60,296.00
+Account Closing Bal: $99,802.50
+Trade Profit/Loss: $-912.50 (-0.91%)
+Total Profit/Loss: $-197.50 (-0.2%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 11
+Date: Sat-12-Oct-24
+Account opening bal: $99,802.50
+Current Position: None
+Decision: Opening a long @ $62,500.00
+Account Closing Bal: $99,802.50
+Trade Profit/Loss: -
+Total Profit/Loss: $-197.50 (-0.2%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 12
+Date: Sun-13-Oct-24
+Account opening bal: $99,802.50
+Current Position: Long
+Decision: Remain Long
+Account Closing Bal: $99,802.50
+Trade Profit/Loss: -
+Total Profit/Loss: $-197.50 (-0.2%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 13
+Date: Mon-14-Oct-24
+Account opening bal: $99,802.50
+Current Position: Long
+Decision: Remain Long
+Account Closing Bal: $99,802.50
+Trade Profit/Loss: -
+Total Profit/Loss: $-197.50 (-0.2%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 14
+Date: Tue-15-Oct-24
+Account opening bal: $99,802.50
+Current Position: Long
+Decision: Remain Long
+Account Closing Bal: $99,802.50
+Trade Profit/Loss: -
+Total Profit/Loss: $-197.50 (-0.2%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 15
+Date: Wed-16-Oct-24
+Account opening bal: $99,802.50
+Current Position: Long
+Decision: Closing long @ $67,057.00
+Account Closing Bal: $102,081.00
+Trade Profit/Loss: $2,278.50 (2.28%)
+Total Profit/Loss: $2,081.00 (2.08%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 16
+Date: Thu-17-Oct-24
+Account opening bal: $102,081.00
+Current Position: None
+Decision: Opening a short @ $67,595.00
+Account Closing Bal: $102,081.00
+Trade Profit/Loss: -
+Total Profit/Loss: $2,081.00 (2.08%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 17
+Date: Fri-18-Oct-24
+Account opening bal: $102,081.00
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $102,081.00
+Trade Profit/Loss: -
+Total Profit/Loss: $2,081.00 (2.08%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 18
+Date: Sat-19-Oct-24
+Account opening bal: $102,081.00
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $102,081.00
+Trade Profit/Loss: -
+Total Profit/Loss: $2,081.00 (2.08%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 19
+Date: Sun-20-Oct-24
+Account opening bal: $102,081.00
+Current Position: Short
+Decision: Closing short @ $68,370.00
+Account Closing Bal: $102,468.50
+Trade Profit/Loss: $387.50 (0.38%)
+Total Profit/Loss: $2,468.50 (2.47%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 20
+Date: Mon-21-Oct-24
+Account opening bal: $102,468.50
+Current Position: None
+Decision: Opening a long @ $69,034.00
+Account Closing Bal: $102,468.50
+Trade Profit/Loss: -
+Total Profit/Loss: $2,468.50 (2.47%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 21
+Date: Tue-22-Oct-24
+Account opening bal: $102,468.50
+Current Position: Long
+Decision: Remain Long
+Account Closing Bal: $102,468.50
+Trade Profit/Loss: -
+Total Profit/Loss: $2,468.50 (2.47%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 22
+Date: Wed-23-Oct-24
+Account opening bal: $102,468.50
+Current Position: Long
+Decision: Closing long @ $67,410.00
+Account Closing Bal: $101,656.50
+Trade Profit/Loss: $-812.00 (-0.79%)
+Total Profit/Loss: $1,656.50 (1.66%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 23
+Date: Thu-24-Oct-24
+Account opening bal: $101,656.50
+Current Position: None
+Decision: Opening a short @ $66,659.00
+Account Closing Bal: $101,656.50
+Trade Profit/Loss: -
+Total Profit/Loss: $1,656.50 (1.66%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 24
+Date: Fri-25-Oct-24
+Account opening bal: $101,656.50
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $101,656.50
+Trade Profit/Loss: -
+Total Profit/Loss: $1,656.50 (1.66%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 25
+Date: Sat-26-Oct-24
+Account opening bal: $101,656.50
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $101,656.50
+Trade Profit/Loss: -
+Total Profit/Loss: $1,656.50 (1.66%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 26
+Date: Sun-27-Oct-24
+Account opening bal: $101,656.50
+Current Position: Short
+Decision: Closing short @ $67,069.00
+Account Closing Bal: $101,861.50
+Trade Profit/Loss: $205.00 (0.2%)
+Total Profit/Loss: $1,861.50 (1.86%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 27
+Date: Mon-28-Oct-24
+Account opening bal: $101,861.50
+Current Position: None
+Decision: Opening a long @ $68,001.00
+Account Closing Bal: $101,861.50
+Trade Profit/Loss: -
+Total Profit/Loss: $1,861.50 (1.86%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 28
+Date: Tue-29-Oct-24
+Account opening bal: $101,861.50
+Current Position: Long
+Decision: Remain Long
+Account Closing Bal: $101,861.50
+Trade Profit/Loss: -
+Total Profit/Loss: $1,861.50 (1.86%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 29
+Date: Wed-30-Oct-24
+Account opening bal: $101,861.50
+Current Position: Long
+Decision: Closing long @ $72,758.00
+Account Closing Bal: $104,240.00
+Trade Profit/Loss: $2,378.50 (2.34%)
+Total Profit/Loss: $4,240.00 (4.24%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 30
+Date: Thu-31-Oct-24
+Account opening bal: $104,240.00
+Current Position: None
+Decision: Opening a short @ $72,386.00
+Account Closing Bal: $104,240.00
+Trade Profit/Loss: -
+Total Profit/Loss: $4,240.00 (4.24%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 31
+Date: Fri-01-Nov-24
+Account opening bal: $104,240.00
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $104,240.00
+Trade Profit/Loss: -
+Total Profit/Loss: $4,240.00 (4.24%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 32
+Date: Sat-02-Nov-24
+Account opening bal: $104,240.00
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $104,240.00
+Trade Profit/Loss: -
+Total Profit/Loss: $4,240.00 (4.24%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 33
+Date: Sun-03-Nov-24
+Account opening bal: $104,240.00
+Current Position: Short
+Decision: Closing short @ $69,364.00
+Account Closing Bal: $102,729.00
+Trade Profit/Loss: $-1,511.00 (-1.45%)
+Total Profit/Loss: $2,729.00 (2.73%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 34
+Date: Mon-04-Nov-24
+Account opening bal: $102,729.00
+Current Position: None
+Decision: Opening a short @ $68,744.00
+Account Closing Bal: $102,729.00
+Trade Profit/Loss: -
+Total Profit/Loss: $2,729.00 (2.73%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 35
+Date: Tue-05-Nov-24
+Account opening bal: $102,729.00
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $102,729.00
+Trade Profit/Loss: -
+Total Profit/Loss: $2,729.00 (2.73%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 36
+Date: Wed-06-Nov-24
+Account opening bal: $102,729.00
+Current Position: Short
+Decision: Closing short @ $69,346.00
+Account Closing Bal: $103,030.00
+Trade Profit/Loss: $301.00 (0.29%)
+Total Profit/Loss: $3,030.00 (3.03%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 37
+Date: Thu-07-Nov-24
+Account opening bal: $103,030.00
+Current Position: None
+Decision: Opening a short @ $75,600.00
+Account Closing Bal: $103,030.00
+Trade Profit/Loss: -
+Total Profit/Loss: $3,030.00 (3.03%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 38
+Date: Fri-08-Nov-24
+Account opening bal: $103,030.00
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $103,030.00
+Trade Profit/Loss: -
+Total Profit/Loss: $3,030.00 (3.03%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 39
+Date: Sat-09-Nov-24
+Account opening bal: $103,030.00
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $103,030.00
+Trade Profit/Loss: -
+Total Profit/Loss: $3,030.00 (3.03%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 40
+Date: Sun-10-Nov-24
+Account opening bal: $103,030.00
+Current Position: Short
+Decision: Closing short @ $76,702.00
+Account Closing Bal: $103,581.00
+Trade Profit/Loss: $551.00 (0.53%)
+Total Profit/Loss: $3,581.00 (3.58%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 41
+Date: Mon-11-Nov-24
+Account opening bal: $103,581.00
+Current Position: None
+Decision: Opening a short @ $80,428.00
+Account Closing Bal: $103,581.00
+Trade Profit/Loss: -
+Total Profit/Loss: $3,581.00 (3.58%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 42
+Date: Tue-12-Nov-24
+Account opening bal: $103,581.00
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $103,581.00
+Trade Profit/Loss: -
+Total Profit/Loss: $3,581.00 (3.58%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 43
+Date: Wed-13-Nov-24
+Account opening bal: $103,581.00
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $103,581.00
+Trade Profit/Loss: -
+Total Profit/Loss: $3,581.00 (3.58%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 44
+Date: Thu-14-Nov-24
+Account opening bal: $103,581.00
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $103,581.00
+Trade Profit/Loss: -
+Total Profit/Loss: $3,581.00 (3.58%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 45
+Date: Fri-15-Nov-24
+Account opening bal: $103,581.00
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $103,581.00
+Trade Profit/Loss: -
+Total Profit/Loss: $3,581.00 (3.58%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 46
+Date: Sat-16-Nov-24
+Account opening bal: $103,581.00
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $103,581.00
+Trade Profit/Loss: -
+Total Profit/Loss: $3,581.00 (3.58%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 47
+Date: Sun-17-Nov-24
+Account opening bal: $103,581.00
+Current Position: Short
+Decision: Closing short @ $90,625.00
+Account Closing Bal: $108,679.50
+Trade Profit/Loss: $5,098.50 (4.92%)
+Total Profit/Loss: $8,679.50 (8.68%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 48
+Date: Mon-18-Nov-24
+Account opening bal: $108,679.50
+Current Position: None
+Decision: Opening a long @ $89,900.00
+Account Closing Bal: $108,679.50
+Trade Profit/Loss: -
+Total Profit/Loss: $8,679.50 (8.68%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 49
+Date: Tue-19-Nov-24
+Account opening bal: $108,679.50
+Current Position: Long
+Decision: Closing long @ $90,535.00
+Account Closing Bal: $108,997.00
+Trade Profit/Loss: $317.50 (0.29%)
+Total Profit/Loss: $8,997.00 (9.0%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 50
+Date: Wed-20-Nov-24
+Account opening bal: $108,997.00
+Current Position: None
+Decision: Opening a short @ $92,341.00
+Account Closing Bal: $108,997.00
+Trade Profit/Loss: -
+Total Profit/Loss: $8,997.00 (9.0%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 51
+Date: Thu-21-Nov-24
+Account opening bal: $108,997.00
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $108,997.00
+Trade Profit/Loss: -
+Total Profit/Loss: $8,997.00 (9.0%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 52
+Date: Fri-22-Nov-24
+Account opening bal: $108,997.00
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $108,997.00
+Trade Profit/Loss: -
+Total Profit/Loss: $8,997.00 (9.0%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 53
+Date: Sat-23-Nov-24
+Account opening bal: $108,997.00
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $108,997.00
+Trade Profit/Loss: -
+Total Profit/Loss: $8,997.00 (9.0%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 54
+Date: Sun-24-Nov-24
+Account opening bal: $108,997.00
+Current Position: Short
+Decision: Closing short @ $97,740.00
+Account Closing Bal: $111,696.50
+Trade Profit/Loss: $2,699.50 (2.48%)
+Total Profit/Loss: $11,696.50 (11.7%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 55
+Date: Mon-25-Nov-24
+Account opening bal: $111,696.50
+Current Position: None
+Decision: Opening a short @ $98,028.00
+Account Closing Bal: $111,696.50
+Trade Profit/Loss: -
+Total Profit/Loss: $11,696.50 (11.7%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 56
+Date: Tue-26-Nov-24
+Account opening bal: $111,696.50
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $111,696.50
+Trade Profit/Loss: -
+Total Profit/Loss: $11,696.50 (11.7%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 57
+Date: Wed-27-Nov-24
+Account opening bal: $111,696.50
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $111,696.50
+Trade Profit/Loss: -
+Total Profit/Loss: $11,696.50 (11.7%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 58
+Date: Thu-28-Nov-24
+Account opening bal: $111,696.50
+Current Position: Short
+Decision: Closing short @ $95,909.00
+Account Closing Bal: $110,637.00
+Trade Profit/Loss: $-1,059.50 (-0.95%)
+Total Profit/Loss: $10,637.00 (10.64%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 59
+Date: Fri-29-Nov-24
+Account opening bal: $110,637.00
+Current Position: None
+Decision: Opening a short @ $95,703.00
+Account Closing Bal: $110,637.00
+Trade Profit/Loss: -
+Total Profit/Loss: $10,637.00 (10.64%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 60
+Date: Sat-30-Nov-24
+Account opening bal: $110,637.00
+Current Position: Short
+Decision: Closing short @ $97,527.00
+Account Closing Bal: $111,549.00
+Trade Profit/Loss: $912.00 (0.82%)
+Total Profit/Loss: $11,549.00 (11.55%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 61
+Date: Sun-01-Dec-24
+Account opening bal: $111,549.00
+Current Position: None
+Decision: Opening a long @ $96,484.00
+Account Closing Bal: $111,549.00
+Trade Profit/Loss: -
+Total Profit/Loss: $11,549.00 (11.55%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 62
+Date: Mon-02-Dec-24
+Account opening bal: $111,549.00
+Current Position: Long
+Decision: Remain Long
+Account Closing Bal: $111,549.00
+Trade Profit/Loss: -
+Total Profit/Loss: $11,549.00 (11.55%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 63
+Date: Tue-03-Dec-24
+Account opening bal: $111,549.00
+Current Position: Long
+Decision: Closing long @ $95,887.00
+Account Closing Bal: $111,250.50
+Trade Profit/Loss: $-298.50 (-0.27%)
+Total Profit/Loss: $11,250.50 (11.25%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 64
+Date: Wed-04-Dec-24
+Account opening bal: $111,250.50
+Current Position: None
+Decision: Opening a short @ $95,920.00
+Account Closing Bal: $111,250.50
+Trade Profit/Loss: -
+Total Profit/Loss: $11,250.50 (11.25%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 65
+Date: Thu-05-Dec-24
+Account opening bal: $111,250.50
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $111,250.50
+Trade Profit/Loss: -
+Total Profit/Loss: $11,250.50 (11.25%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 66
+Date: Fri-06-Dec-24
+Account opening bal: $111,250.50
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $111,250.50
+Trade Profit/Loss: -
+Total Profit/Loss: $11,250.50 (11.25%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 67
+Date: Sat-07-Dec-24
+Account opening bal: $111,250.50
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $111,250.50
+Trade Profit/Loss: -
+Total Profit/Loss: $11,250.50 (11.25%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 68
+Date: Sun-08-Dec-24
+Account opening bal: $111,250.50
+Current Position: Short
+Decision: Closing short @ $99,913.00
+Account Closing Bal: $113,247.00
+Trade Profit/Loss: $1,996.50 (1.79%)
+Total Profit/Loss: $13,247.00 (13.25%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 69
+Date: Mon-09-Dec-24
+Account opening bal: $113,247.00
+Current Position: None
+Decision: Opening a long @ $101,187.00
+Account Closing Bal: $113,247.00
+Trade Profit/Loss: -
+Total Profit/Loss: $13,247.00 (13.25%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 70
+Date: Tue-10-Dec-24
+Account opening bal: $113,247.00
+Current Position: Long
+Decision: Closing long @ $97,329.00
+Account Closing Bal: $111,318.00
+Trade Profit/Loss: $-1,929.00 (-1.7%)
+Total Profit/Loss: $11,318.00 (11.32%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 71
+Date: Wed-11-Dec-24
+Account opening bal: $111,318.00
+Current Position: None
+Decision: Opening a short @ $96,553.00
+Account Closing Bal: $111,318.00
+Trade Profit/Loss: -
+Total Profit/Loss: $11,318.00 (11.32%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 72
+Date: Thu-12-Dec-24
+Account opening bal: $111,318.00
+Current Position: Short
+Decision: Closing short @ $101,128.00
+Account Closing Bal: $113,605.50
+Trade Profit/Loss: $2,287.50 (2.05%)
+Total Profit/Loss: $13,605.50 (13.61%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 73
+Date: Fri-13-Dec-24
+Account opening bal: $113,605.50
+Current Position: None
+Decision: Opening a short @ $99,982.00
+Account Closing Bal: $113,605.50
+Trade Profit/Loss: -
+Total Profit/Loss: $13,605.50 (13.61%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 74
+Date: Sat-14-Dec-24
+Account opening bal: $113,605.50
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $113,605.50
+Trade Profit/Loss: -
+Total Profit/Loss: $13,605.50 (13.61%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 75
+Date: Sun-15-Dec-24
+Account opening bal: $113,605.50
+Current Position: Short
+Decision: Closing short @ $101,420.00
+Account Closing Bal: $114,324.50
+Trade Profit/Loss: $719.00 (0.63%)
+Total Profit/Loss: $14,324.50 (14.32%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 76
+Date: Mon-16-Dec-24
+Account opening bal: $114,324.50
+Current Position: None
+Decision: Opening a long @ $104,516.00
+Account Closing Bal: $114,324.50
+Trade Profit/Loss: -
+Total Profit/Loss: $14,324.50 (14.32%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 77
+Date: Tue-17-Dec-24
+Account opening bal: $114,324.50
+Current Position: Long
+Decision: Closing long @ $106,094.00
+Account Closing Bal: $115,113.50
+Trade Profit/Loss: $789.00 (0.69%)
+Total Profit/Loss: $15,113.50 (15.11%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 78
+Date: Wed-18-Dec-24
+Account opening bal: $115,113.50
+Current Position: None
+Decision: Opening a short @ $106,085.00
+Account Closing Bal: $115,113.50
+Trade Profit/Loss: -
+Total Profit/Loss: $15,113.50 (15.11%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 79
+Date: Thu-19-Dec-24
+Account opening bal: $115,113.50
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $115,113.50
+Trade Profit/Loss: -
+Total Profit/Loss: $15,113.50 (15.11%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 80
+Date: Fri-20-Dec-24
+Account opening bal: $115,113.50
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $115,113.50
+Trade Profit/Loss: -
+Total Profit/Loss: $15,113.50 (15.11%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 81
+Date: Sat-21-Dec-24
+Account opening bal: $115,113.50
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $115,113.50
+Trade Profit/Loss: -
+Total Profit/Loss: $15,113.50 (15.11%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 82
+Date: Sun-22-Dec-24
+Account opening bal: $115,113.50
+Current Position: Short
+Decision: Closing short @ $97,250.00
+Account Closing Bal: $110,696.00
+Trade Profit/Loss: $-4,417.50 (-3.84%)
+Total Profit/Loss: $10,696.00 (10.7%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 83
+Date: Mon-23-Dec-24
+Account opening bal: $110,696.00
+Current Position: None
+Decision: Opening a short @ $95,145.00
+Account Closing Bal: $110,696.00
+Trade Profit/Loss: -
+Total Profit/Loss: $10,696.00 (10.7%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 84
+Date: Tue-24-Dec-24
+Account opening bal: $110,696.00
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $110,696.00
+Trade Profit/Loss: -
+Total Profit/Loss: $10,696.00 (10.7%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 85
+Date: Wed-25-Dec-24
+Account opening bal: $110,696.00
+Current Position: Short
+Decision: Closing short @ $98,628.00
+Account Closing Bal: $112,437.50
+Trade Profit/Loss: $1,741.50 (1.57%)
+Total Profit/Loss: $12,437.50 (12.44%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 86
+Date: Thu-26-Dec-24
+Account opening bal: $112,437.50
+Current Position: None
+Decision: Opening a short @ $99,405.00
+Account Closing Bal: $112,437.50
+Trade Profit/Loss: -
+Total Profit/Loss: $12,437.50 (12.44%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 87
+Date: Fri-27-Dec-24
+Account opening bal: $112,437.50
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $112,437.50
+Trade Profit/Loss: -
+Total Profit/Loss: $12,437.50 (12.44%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 88
+Date: Sat-28-Dec-24
+Account opening bal: $112,437.50
+Current Position: Short
+Decision: Remain Short
+Account Closing Bal: $112,437.50
+Trade Profit/Loss: -
+Total Profit/Loss: $12,437.50 (12.44%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 89
+Date: Sun-29-Dec-24
+Account opening bal: $112,437.50
+Current Position: Short
+Decision: Closing short @ $95,256.00
+Account Closing Bal: $110,363.00
+Trade Profit/Loss: $-2,074.50 (-1.85%)
+Total Profit/Loss: $10,363.00 (10.36%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 90
+Date: Mon-30-Dec-24
+Account opening bal: $110,363.00
+Current Position: None
+Decision: Opening a long @ $93,699.00
+Account Closing Bal: $110,363.00
+Trade Profit/Loss: -
+Total Profit/Loss: $10,363.00 (10.36%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 91
+Date: Tue-31-Dec-24
+Account opening bal: $110,363.00
+Current Position: Long
+Decision: Closing long @ $92,739.00
+Account Closing Bal: $109,883.00
+Trade Profit/Loss: $-480.00 (-0.43%)
+Total Profit/Loss: $9,883.00 (9.88%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 92
+Date: Wed-01-Jan-25
+Account opening bal: $109,883.00
+Current Position: None
+Decision: Opening a long @ $93,530.00
+Account Closing Bal: $109,883.00
+Trade Profit/Loss: -
+Total Profit/Loss: $9,883.00 (9.88%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 93
+Date: Thu-02-Jan-25
+Account opening bal: $109,883.00
+Current Position: Long
+Decision: Remain Long
+Account Closing Bal: $109,883.00
+Trade Profit/Loss: -
+Total Profit/Loss: $9,883.00 (9.88%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 94
+Date: Fri-03-Jan-25
+Account opening bal: $109,883.00
+Current Position: Long
+Decision: Closing long @ $96,960.00
+Account Closing Bal: $111,598.00
+Trade Profit/Loss: $1,715.00 (1.56%)
+Total Profit/Loss: $11,598.00 (11.6%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 95
+Date: Sat-04-Jan-25
+Account opening bal: $111,598.00
+Current Position: None
+Decision: Opening a long @ $98,140.00
+Account Closing Bal: $111,598.00
+Trade Profit/Loss: -
+Total Profit/Loss: $11,598.00 (11.6%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 96
+Date: Sun-05-Jan-25
+Account opening bal: $111,598.00
+Current Position: Long
+Decision: Remain Long
+Account Closing Bal: $111,598.00
+Trade Profit/Loss: -
+Total Profit/Loss: $11,598.00 (11.6%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 97
+Date: Mon-06-Jan-25
+Account opening bal: $111,598.00
+Current Position: Long
+Decision: Remain Long
+Account Closing Bal: $111,598.00
+Trade Profit/Loss: -
+Total Profit/Loss: $11,598.00 (11.6%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 98
+Date: Tue-07-Jan-25
+Account opening bal: $111,598.00
+Current Position: Long
+Decision: Remain Long
+Account Closing Bal: $111,598.00
+Trade Profit/Loss: -
+Total Profit/Loss: $11,598.00 (11.6%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 99
+Date: Wed-08-Jan-25
+Account opening bal: $111,598.00
+Current Position: Long
+Decision: Closing long @ $96,908.00
+Account Closing Bal: $110,982.00
+Trade Profit/Loss: $-616.00 (-0.55%)
+Total Profit/Loss: $10,982.00 (10.98%)
+---------------------------------------------------------
+---------------------------------------------------------
+Decision 100
+Date: Thu-09-Jan-25
+Account opening bal: $110,982.00
+Current Position: None
+Decision: Opening a short @ $95,022.00
+Account Closing Bal: $110,982.00
+Trade Profit/Loss: -
+Total Profit/Loss: $10,982.00 (10.98%)
+---------------------------------------------------------
+
+Account reach a high of: 115113.5 and a low of: 99802.5

@@ -60,3 +60,15 @@ Maybe more tomorrow, or maybe some C while I mull over the decisions.
 
 :wq
 
+#### 9th of January, 2025
+Mostly cleaning up some file and thinking of how to progress this from a series
+of pieces into a program that gels... no good solutions so far beside the basic 
+and obvious ones, may be doomed to be a boring piece of software tbh haha. Still 
+lots to do like extra features for the nn to train on, i still haven't scaled the
+data going in.... I know i know, also need to implement a test account and see if 
+that is a feasable path to go down for the competition instead of me opening a 
+real money account and providing acct details.... which im not going to do, so 
+yeah. I'll figure it out in the coming downs, hopefully, long list of todo all 
+through out the program to do.
+:wq
+

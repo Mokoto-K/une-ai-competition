@@ -5,7 +5,7 @@ import numpy as np
 
 class NeuralNetwork:
     
-    def __init__(self, X, y, layers, task = 'binary', learning_rate=0.01, l2=0.0):
+    def __init__(self, X, y, layers, task = 'binary', learning_rate=0.01, l2=0.0, training = False):
         
         # Adding checks for what type of data is being passed in as bugs persist
         self.X = X.to_numpy() if hasattr(X, "to_numpy") else np.array(X)
@@ -31,6 +31,7 @@ class NeuralNetwork:
         self.cache = {}
         self.loss_history = []
         self.l2 = l2
+        self.training = training
         
         # setting which output layer and loss functions to use depending on task 
         if task == 'binary':
@@ -210,6 +211,10 @@ class NeuralNetwork:
         """
         Trains the neural network on the input data
         """
+
+        if not self.training:
+            print("Thinking of what to do...\n")
+
         for epoch in range(epochs):
             y_hat = self.forward_prop()
 
@@ -222,8 +227,11 @@ class NeuralNetwork:
             self.loss_history.append(loss)
             self.back_prop(y_hat)
 
-            if epoch % 100 == 0:
+            if self.training and epoch % 100 == 0:
                 print(f"Epoch {epoch}, Loss: {total_loss:.4f}")
+        
+        if not self.training:
+            print("Found a solution!\n")
 
         
     def predict(self, X):

@@ -1,76 +1,79 @@
 # TODO - Turn this into a presentable file.... 
-
-from features import DataFeatures
+# TODO - Pull everything into methods so its not so busy in that loop
 from strategy import build_strategy 
 from time import sleep
 
 def run_simulation(strategy):
-
     # Neural network
     nn, data = strategy 
 
-    SIMULATIONS = 10
+    SIMULATIONS = 100
     sim_data =  data.simulation_data(SIMULATIONS) 
     
     # Market open and closes
     price_opens = data.price_open[-SIMULATIONS:]
-    price_closes = data.price_close[-SIMULATIONS:]
-    daily_change = sim_data["daily_change"]
+    price_dates = data.dates[-SIMULATIONS:] 
+
     # Account details
-    ACCOUNT_STARTED = 100000
-    ACCOUNT_SIZE = 100000
-    RISK = 0.5
-    POSITION = "none" 
-    OPENING_PRICE = 0 
-    CLOSE_PRICE = 0
-    SIZE = 0
+    ACCT_START = ACCT_SIZE = 100000
+    RISK, POS, SIZE = 0.5, "none", 0
     
-    MAX_ACCOUNT_SIZE = 0 
-    LOWEST_ACCOUNT_SIZE = ACCOUNT_SIZE
+    ACCT_MAX, ACCT_LOW = 0, ACCT_START 
     
     predictions = nn.predict(sim_data)
     
-    
+    # I too would throw up if i saw this ungodly for loop... 
+    print("----------------STARTING UP SIMULATION-------------------")
     for i in range(len(predictions)):
     
-        # Price related things
-        price_open = price_opens.iloc[i]
-        price_close = price_closes.iloc[i] 
-        difference = price_close - price_open
-    
+        # Used for calculating profits and losses and printing the date
+        price_open, price_date = price_opens.iloc[i], price_dates.iloc[i]
+
+        trade_pnl = "-"    
         decision = "long" if predictions[i] > 0.5 else "short"
-       
-    
-        print("-------------------------------------------------------")
-        print(f"Day {i + 1}")
-    
-        if POSITION != "none":
-            if POSITION == decision:
-                print(f"We are {POSITION} and will remain {decision}")
+
+        print(f"{'-'*55}\nDecision {i + 1}\nDate: {price_date}")
+        print(f"Account opening bal: ${round(ACCT_SIZE, 2):,.2f}")
+        
+        c_pos = "Long" if POS == "long" else "Short" if POS == "short" else "None"
+        print(f"Current Position: {c_pos}") 
+
+        if POS != "none":
+            if POS == decision:
+                # Doing literally nothing
+                print(f"Decision: Remain {c_pos}")
             else:
-                print(f"We are {POSITION} and closing our position @ {price_open}") 
-                POSITION = "none"
-                # Adjusts account with profit/loss
-                ACCOUNT_SIZE += price_open * RISK - SIZE
-                print(f"Profit/Loss: {price_open * RISK - SIZE}")
+                # Closing trade
+                print(f"Decision: Closing {POS} @ ${price_open:,.2f}") 
+                POS = "none"
+                # Adjusts account with profit/loss and calcs visuals
+                old_act_size = ACCT_SIZE
+                dollar_diff = price_open * RISK - SIZE
+                ACCT_SIZE += dollar_diff 
+                percent_pnl = (ACCT_SIZE - old_act_size) / old_act_size * 100
+                trade_pnl = f"${round(dollar_diff,2 ):,.2f} ({round(percent_pnl, 2)}%)"
         else:
-            print(f"We are opening a {decision} from {price_open}")
-            POSITION = decision
+            # Opening a new position
+            print(f"Decision: Opening a {decision} @ ${price_open:,.2f}")
+            POS = decision
+
             # TODO - Recalculate size correctly, for now this will do
             SIZE = price_open * RISK
     
-        print(f"ACCOUNT_SIZE: {round(ACCOUNT_SIZE)}, Total Profit/Loss:\
-            {round((ACCOUNT_SIZE - ACCOUNT_STARTED) / ACCOUNT_STARTED * 100, 2)}%")
+        # Print the current bal of account and the pnl for the last trade
+        print(f"Account Closing Bal: ${round(ACCT_SIZE, 2):,.2f}") 
+        print(f"Trade Profit/Loss: {trade_pnl}")
+       
+        # Calculate and display the total dollar change and percent for account
+        dpnl = ACCT_SIZE - ACCT_START
+        ppnl = f"{round((dpnl) / ACCT_START * 100, 2)}%"
+        print(f"Total Profit/Loss: ${dpnl:,.2f} ({ppnl})\n{'-'*55}")
 
-        if ACCOUNT_SIZE > MAX_ACCOUNT_SIZE:
-            MAX_ACCOUNT_SIZE = ACCOUNT_SIZE
+        ACCT_MAX = ACCT_SIZE if ACCT_SIZE > ACCT_MAX else ACCT_MAX
+        ACCT_LOW = ACCT_SIZE if ACCT_SIZE < ACCT_LOW else ACCT_LOW
 
-        if ACCOUNT_SIZE < LOWEST_ACCOUNT_SIZE:
-            LOWEST_ACCOUNT_SIZE = ACCOUNT_SIZE
-
-    print(f"Account reach a high of: {MAX_ACCOUNT_SIZE} and a low of: {LOWEST_ACCOUNT_SIZE}")
+    print(f"\nAccount reach a high of: {ACCT_MAX} and a low of: {ACCT_LOW}")
         #sleep(1)
 
-
 if __name__ == "__main__":
-    run_simulation() 
+    run_simulation(build_strategy("D")) 
