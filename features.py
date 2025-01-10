@@ -1,4 +1,4 @@
-# TODO - This needs to be reworked more modular so that any indices passed in 
+# rTODO - This needs to be reworked more modular so that any indices passed in 
 # can have its own set of features? or perhaps once I train le algo I will know
 # how to contruct the right set of features correctly? come back to this.
 
@@ -190,7 +190,7 @@ class DataFeatures:
         return X_train, X_test, X_val, y_train, y_test, y_val
 
     
-    def simulation_data(self, simulations: int):
+    def simulation_data(self, simulations: int = 10):
         """
         Used to run a simulation of the market if i choose to implement it...
         """

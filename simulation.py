@@ -76,4 +76,4 @@ def run_simulation(strategy):
         #sleep(1)
 
 if __name__ == "__main__":
-    run_simulation(build_strategy("D")) 
+    run_simulation(build_strategy("1")) 

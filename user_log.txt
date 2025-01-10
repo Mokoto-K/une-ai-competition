@@ -1,0 +1,7 @@
+Current Strategy: D
+Current Position: Short
+Open_price: 
+Account Balance: 8402.3604
+Last trade PNL: None
+Total PNL: $0.00 (0.0%)
+Starting Bal: 8402.3604

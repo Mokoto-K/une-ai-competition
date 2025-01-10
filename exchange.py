@@ -19,7 +19,7 @@ class Exchange:
     URL = "https://api.bybit.com"
 
     
-    def __init__(self, api_key: str, api_secret: str, testnet: bool = False):
+    def __init__(self, api_key, api_secret, testnet: bool = False):
         self.api_key = api_key
         self.api_secret = api_secret
         self.time_stamp = str(int(time.time() * 1000))
@@ -98,7 +98,38 @@ class Exchange:
 
         direction = returned_result["side"]
         size = returned_result["size"]
-        return direction, size
+        price = returned_result["avgPrice"]
+        query_status = result.json()["retMsg"]
+
+        return direction, size, price, query_status
+
+
+    def get_balance(self, account_type: str = "UNIFIED", coin: str = "USDT"):
+        """
+        Get user balance 
+        """
+        params = f"accountType={account_type}&coin={coin}"
+
+        result = self._make_request("GET", "/v5/account/wallet-balance", params)
+
+        returned_result = result.json()["result"]["list"][0]["totalWalletBalance"]
+
+        return returned_result 
+
+
+    def get_price(self, category: str = "linear", symbol: str = "BTCUSDT"):
+        """
+        Get price of provided ticker
+        """
+        
+        params = f"category={category}&symbol={symbol}"
+
+        result = self._make_request("GET", "/v5/market/tickers", params)
+
+        returned_result = result.json()["result"]["list"][0]["lastPrice"]
+
+        return returned_result
+
 
     # TODO - REMOVE POST ONLY EVENTUALLYT
     def create_order(self, category, symbol, side, order_type, qty, price, time_in_force="PostOnly"):

@@ -72,3 +72,9 @@ yeah. I'll figure it out in the coming downs, hopefully, long list of todo all
 through out the program to do.
 :wq
 
+#### 10th of January, 2025
+Accomplished very little today, got stuck on alot of small tasks with logging trades,
+environment variables, laoding api keys, etc. I am really unhappy with main.py right
+now, it is an absolute mess! Currently the program is broken but im so tired, i'll be 
+back tomorrow.:wq
+
