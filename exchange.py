@@ -67,7 +67,7 @@ class Exchange:
             'Content-Type': 'application/json'
         }
 
-        if method=="GET":
+        if method == "GET":
             response = requests.get(self.base_url + endpoint + "?" + params,
                                     headers=headers)
         elif method == "POST":
@@ -132,7 +132,7 @@ class Exchange:
 
 
     # TODO - REMOVE POST ONLY EVENTUALLYT
-    def create_order(self, category, symbol, side, order_type, qty, price, time_in_force="PostOnly"):
+    def create_limit_order(self, category, symbol, side, order_type, qty, price, time_in_force="PostOnly"):
         params = json.dumps({
                             "category": category,
                             "symbol": symbol,
@@ -145,6 +145,22 @@ class Exchange:
 
         response = self._make_request("POST", "/v5/order/create", params)
 
+        return response.json()
+
+
+    def create_market_order(self, category, symbol, side, order_type, qty) -> str: 
+        params = json.dumps({
+                            "category": category,
+                            "symbol": symbol,
+                            "side": side,
+                            "orderType": order_type,
+                            "qty": qty,
+        })
+
+        response = self._make_request("POST", "/v5/order/create", params)
+
+        print(response)
+        # Return the response mostly for testing
         return response.json()
 
 

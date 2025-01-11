@@ -12,7 +12,7 @@
 # dataset, one less place to update values... or three less places
 
 import pandas as pd #""standing on the shoulders of giants - Issac Newton"... for now" - me
-from mykitlearn import split_test_train, encode_labeler # Screw the giants!
+from mykitlearn import NonStandardScaler, split_test_train, encode_labeler, UnstandardScaler # Screw the giants!
 
 # Feature "engineering" (like im building bridges out here!)-------------------
 class DataFeatures:
@@ -29,6 +29,7 @@ class DataFeatures:
                         "month": encode_labeler(),
                         "target": encode_labeler()
                         }
+        self.unstandardScaler = NonStandardScaler()
 
         # Assign quick refs to our main data points in the dataframe
         self.price_open = self.market_data.open
@@ -157,10 +158,6 @@ class DataFeatures:
             self.market_data[feature] = encoder.fit_transform(self.market_data[feature])
 
 
-# Scale the features
-# Coming soon
-
-
     # Feature selection
     def prep_data(self, test_size: float = 0.2, random_state: int = 42) -> tuple:
         """
@@ -187,6 +184,18 @@ class DataFeatures:
         X_val, X_train = X_full[:100], X_full[100:]
         y_val, y_train = y_full[:100], y_full[100:]
         
+        # Implement our originally thought of and created scalling strategy
+        # TODO - Make these variables a maintainable list init in init and updated
+        # every time I create a feature. Same with the other lists of feautures
+        scale_features = ["daily_change", "volitility", "volume"]
+        self.unstandardScaler.fit(X_train[scale_features])
+
+        # THIS WAS NOT WORTH IT, HOLY SHIT IMPLEMENTING MY OWN SCALING WAS A NIGHTMARE
+        X_train.loc[:, scale_features] = self.unstandardScaler.transform(X_train[scale_features])
+        X_val.loc[:, scale_features] = self.unstandardScaler.transform(X_val[scale_features])
+        X_test.loc[:, scale_features] = self.unstandardScaler.transform(X_test[scale_features])
+                
+
         return X_train, X_test, X_val, y_train, y_test, y_val
 
     
@@ -197,15 +206,24 @@ class DataFeatures:
         selected_features: list =["day", "month", "daily_change", "volitility", 
                                   "volume"]
 
-        return self.market_data[-simulations:].filter(selected_features)
+        scale_features = ["daily_change", "volitility", "volume"]
+
+        sim_data = self.market_data[-simulations:].filter(selected_features)
+
+        sim_data[scale_features] = self.unstandardScaler.transform(sim_data[scale_features])
+        return sim_data
 
 
     def get_latest_values(self):
         selected_features: list =["day", "month","daily_change", "volitility", 
                                   "volume"]
 
-        return self.market_data[-1:].filter(selected_features)
 
+        scale_features = ["daily_change", "volitility", "volume"]
+        latest_vals = self.market_data[-1:].filter(selected_features)
+
+        latest_vals[scale_features] = self.unstandardScaler.transform(latest_vals[scale_features])
+        return latest_vals
 
     def process_all_features(self) -> None:
         """

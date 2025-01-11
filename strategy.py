@@ -9,7 +9,7 @@ from database import Database
 
 
 def build_strategy(risk: str = "D"):
-    database = Database(time_frame = risk) 
+    database = Database(time_frame = risk[0]) # passing only the first letter in 
     database.run()
     file_path = database.get_file_name()
 
@@ -32,10 +32,10 @@ def build_strategy(risk: str = "D"):
     nn = NeuralNetwork(X_train, y_train, 
                              task = "binary", 
                              layers = architecture,
-                             learning_rate = 0.1)
+                             learning_rate = 0.1, training=False)
 
     # Train him
-    nn.train(1000)
+    nn.train(5000)
 
     # temp sending the file name this way, obvs refactor to a class shortly
     return nn, data 

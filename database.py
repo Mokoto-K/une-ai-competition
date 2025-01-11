@@ -85,7 +85,7 @@ class Database:
             
             # Add the column names to the file 
             new_file.write("date,time,open,high,low,close,volume,utc\n")
-        
+                
         market_data = self.query_exchange()
         self.write_to_DB(market_data) 
     
@@ -213,16 +213,14 @@ class Database:
         
 
     def run(self):
-        print("---------------------------------------------------------")
-        print("---------------------------------------------------------")
+        print(f"{'-'*55}\n{'-'*55}")
         if self.test_connection:  
             if not os.path.exists(self.file_name):
                 self.create_DB()
             else: 
                 self.update_DB()
     
-        print("---------------------------------------------------------")
-        print("---------------------------------------------------------\n")
+        print(f"{'-'*55}\n{'-'*55}")
 
     
 if __name__ == "__main__":

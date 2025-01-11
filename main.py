@@ -1,23 +1,20 @@
-# TODO - Fix up simulation class *
-# TODO - Add logging for real trades, when they open, close, profit, etc
-# TODO - Add scaling to features and addm more features
 # TODO - implement size if test acct is used.
 # TODO - Look at strategy for more control over trades and conditions
+# TODO - SO MUCH DOCUMENTATION MISSING
 # TODO - implement a testing class for easier tuning of the nn
 # TODO - Go through each file and look at the todos.
 # TODO - Replace all limit orders with market orders 
+# TODO - Add more features to train on
 
 import os
 from dotenv import load_dotenv
-from database import Database
-from features import DataFeatures
 from simulation import run_simulation
 from strategy import build_strategy 
 from exchange import Exchange
+import logger
 
-load_dotenv()
 
-
+# TODO - get_choice and get_risk are the same func, fold them into one.
 def get_choice() -> bool:
     """
     Gets choice of simulation or real trading mode
@@ -57,13 +54,35 @@ def get_risk() -> str:
                      ">> ")
         print()
         if user.lower() == "h":
-            risk = "1"
+            risk = "1 - High Risk"
         elif user.lower() == "l":
-            risk = "D"
+            risk = "D - Low Risk"
         else:
             print("Please check you input a valid option\n")
-
+    os.system('cls||clear')
     return risk
+
+
+# TODO - feel free to collapse these two functions into one converter conditional
+def str_to_float(num: str) -> float:
+    """
+    Converts a str in "$x,xxx.xx" format to a float
+
+    Params:
+    num - a number represented as a string e.g "$xx,xxx.xx"
+    """
+    return float(num.replace("," ,"").strip("$").strip())
+
+
+def float_to_str(num: float) -> str:
+    """
+    Converts a float to a string adding leading $ sign and two decimals
+
+    Params:
+    num
+    """
+    return f"${num:,.2f}"
+
 
 
 def take_action(decision) -> None:
@@ -76,10 +95,14 @@ def take_action(decision) -> None:
     position - The current direction we are in the market
     decision - The Neural networks decision on where to do next
     """
-    
+    # TODO This whole logic may work at the moment but is extremely bug prone due 
+    # to alot of assumptions im making because we currently have complete control 
+    # over the test account we are using for this program, fix this to be more 
+    # safe to use for the future
+
     # Create an instance of our exchange
-    key: str = os.getenv("API_KEY")
-    secret: str = os.getenv("API_SECRET")
+    key = os.getenv("API_KEY")
+    secret = os.getenv("API_SECRET")
     bybit = Exchange(key, secret, testnet= True)
 
     # Translate the nn decision to a market action
@@ -89,40 +112,44 @@ def take_action(decision) -> None:
     direction = "Long" if decision == "Buy" else "Short"
 
     # Finds out if we are in a position or not. 
-    position_details = bybit.get_position(symbol="BTC-28MAR25")
+    position_details = bybit.get_position(symbol="BTCUSDT") 
     position = position_details[0]
 
     # TODO -Rewrite this more eloquently you rusher!!!!!
     account_size = bybit.get_balance()
-    if read_log_file()[6] == "None":
+    if account_size != "":
+        account_size = str_to_float(account_size)
+    else:
+        print("There is no balance in the supplied account")
+        exit(0)
+
+    if logger.read_log_file()[6] == "None":
         starting_bal = account_size
     else:
-        starting_bal = read_log_file()[6]
+        starting_bal = str_to_float(logger.read_log_file()[6])
      
-    account_size = float(account_size)
-
     # The last trades profit and loss
-    lpnl = read_log_file()[4]
+    lpnl = logger.read_log_file()[4]
 
     if position != "":
         if position == decision:
             print(f"We are in a {direction} and will remain {direction}")
-            price = position_details[2]
+            price = f"${float(position_details[2]):,.2f}"
 
         else:
             print(f"We are closing our {direction} position")
             # Keep size as a string for creating orders, even tho we use it for math
             size = position_details[1]
-            open_price = float(position_details[2])
+            open_price = str_to_float(position_details[2]) 
             close_price = float(bybit.get_price())
             percent_chg = (close_price - open_price) / open_price * 100
             dollar_diff = close_price * float(size) - open_price * float(size)
             lpnl = f"${dollar_diff:,.2f} ({round(percent_chg, 2)}%)"
-            # TODO - Replace with market order with symbol, etc determined
-            # TODO - remember to remove postOnl;y eventually too
-            # TODO - send two orders to flip or double size... think about best way
-            bybit.create_order("linear", "BTCUSDT", decision, "Limit", size, "72000")
-            bybit.cancel_all() 
+
+            # bybit.create_limit_order("linear", "BTCUSDT", decision, "Limit", size, "72000")
+            # bybit.cancel_all() 
+            # Uncomment when ready for final testing
+            bybit.create_market_order("linear", "BTCUSDT", decision, "Market", size)
 
             # Changinge dir to nothing here instead of flipping pos, again think what you wanna do
             account_size += dollar_diff
@@ -130,42 +157,48 @@ def take_action(decision) -> None:
             price = "-"
 
     else:
-        print(f"Not in any position, Entering a {direction}")
+        print(f"Not in any position, Entering a {direction}\n")
 
-        # TODO - Replace with market orders with symbol and size determined
-        bybit.create_order("linear", "BTCUSDT", decision, "Limit", "0.05", "72000")
+        # TODO - write separate function that calcs size using risk and acct 
+        risk_percent = 0.05     # This should be controlled by strategy module.
+        size = str(round(max(account_size * risk_percent / float(bybit.get_price()), 0.001), 3))
+        # bybit.create_limit_order("linear", "BTCUSDT", decision, "Limit", size, "72000")
         # TODO - Remove this once testing is done
-        bybit.cancel_all()
+        # bybit.cancel_all()
+
+        bybit.create_market_order("linear", "BTCUSDT", decision, "Market", size)
+        # This is needed when building out the program as we arnt sending orders yet
+        # So return vals arnt what they should be yet
         price = position_details[2]
+        price = f"${float(price):,.2f}" if price != '' else '-'
         
     # Calcs for total pnl for account
-    dpnl = account_size - float(starting_bal)
-    ppnl = dpnl / float(starting_bal) * 100
+    dpnl = account_size - starting_bal
+    ppnl = dpnl / starting_bal * 100
     tpnl = f"${dpnl:,.2f} ({round(ppnl, 2)}%)"
 
-    # Look at me go, trying as hard as possible to bug out cuz im lazy
-    # TODO - FIX THIS IDIOT! it works for 1 char timeframes but if i add more later
+    # TODO - FIX THIS! it works for 1 char timeframes but if i add more later
     # it will be a big bug I either wont find or think of! FIX IT on the first run
-    # of otimizing!!!
-    strat = read_log_file()[0][0]
-
-    log = (f"Current Strategy: {strat}\nCurrent Position: {direction}\n"
-           f"Open_price: {price}\nAccount Balance: {account_size}\n"
-           f"Last trade PNL: {lpnl}\nTotal PNL: {tpnl}\nStarting Bal: {starting_bal}\n")
+    # of optimizing!!!
+    strat = logger.read_log_file()[0]
    
-    write_log_file(log)
-    print(log)
+    logger.write_log_file(strat, direction, price, f"${float(account_size):,.2f}", 
+                          lpnl, tpnl, f"${float(starting_bal):,.2f}")
+    logger.print_log()
+
 
 def create_env() -> None:
     # TODO - Add more insrtuction like website to get account, to api, etc
     # TODO - change this from true to be more specific, fine for now while dev
-    while(True):
+    while True:
         with open(".env", "w") as file:
             api_key: str = input("Please enter your api key:\n")
             api_secret: str = input("Please enter you api secret:\n")
 
             print(f"{'-'*55}\nCREATING AUTHENTICATION LINK\n{'-'*55}")
-
+            
+            # TODO - Storing api keys as unprotected strings in a txt file i see... very good.
+            # we should just roll our own encryption to protect them while we are at it.
             str_to_write: str = f"API_KEY={api_key}\nAPI_SECRET={api_secret}"
             file.writelines(str_to_write)
         
@@ -181,42 +214,35 @@ def create_env() -> None:
             break
             # TODO - Handle error correctly, big black hole for a user here
         except Exception: 
-            print("Error with api key/secret, try again and check internet connection")
+            print("Error with api key/secret, try again and check internet connection\n")
 
 
-def write_log_file(log: str = "") -> None:
-    if log == "":
-        log = "Current Strategy: Default\nCurrent Position: None\nOpen_price: None\n \
-        Account Balance: None\nLast trade PNL: None\nTotal PNL: None\nStarting Bal: None"
-
-    with open("user_log.txt", "w") as file:
-        file.writelines(log)
-
-        
-def read_log_file():
-
-    log_vars = []
-
-    with open("user_log.txt", "r") as file:
-        lines = file.readlines()
-        for line in lines:
-            log_vars.append(line.split(":")[1].strip(" ").strip("\n"))
-        log_vars.append(lines)
-    return log_vars
-
+# TODO - Pretty much just duplicating the func above but when an env file exists, 
+# better solution to this exist, come back to fix this 
+def validate_env():
+    while True:
+        try:
+            # We have to pass in the user provided variables as the env 
+            e = Exchange(os.getenv("API_KEY"), os.getenv("API_SECRET"), True)
+            e.get_position()
+            break
+            # TODO - Handle error correctly, big black hole for a user here
+        except Exception: 
+            print("Error with api key/secret\n")
+            create_env()
 
 def next_action():
+
     while True:
-
-
-        user = input("What do you wanna do?\nPress c to Change strategy\n"
+        user = input("What would you like to do?\nPress c to Change strategy\n"
                          "Press e to exit\n\n>> ")
         if user == "c":
-            os.system('cls||clear')
+            #os.system('cls||clear')
             strat = get_risk()
-            # This doesnt work but im tired, fix tomorrow
-            current_log = f"Current Strategy: {strat}{read_log_file()[7]}"
-            write_log_file(current_log)
+
+            # ewww, bad bad bad design, figure out a way to work with the logs better
+            log = logger.read_log_file()
+            logger.write_log_file(strat, log[1], log[2], log[3], log[4], log[5], log[6])
             break
         elif user == "e":
             # TODO - better bye message bro, something like check in later or something
@@ -225,10 +251,11 @@ def next_action():
         else:
             print("Command unknown, please make sure you are entering a valid command")
 
+
 def main():
 
     print("\nWelcome to self managing your retirement fund \n" + 
-        "(this is a literal casino)\n")
+        "(This is a literal casino)\n")
 
     sim = get_choice()
 
@@ -237,31 +264,37 @@ def main():
         run_simulation(build_strategy(risk))
     else:
 
+        # Check for a valid .env file with valid api key and secret
         if not os.path.exists("./.env"):
             # Create env file 
             create_env()
+        else:
+            validate_env()
 
-            # create log file indent back under not os.path when finished testing
-        write_log_file()
         os.system('cls||clear')
 
         while True:
-            # This is some sneaky bug bound shit im trying to pull off, read the
-            # first char from the first item in the list returned by the log reader...
-            # I could not think up less dynamic and modular code, great work me.
-            risk = "D" if read_log_file()[0][0] == "D" else "1"
+            risk = logger.read_log_file()[0] 
 
-            
             # reads risk from log file, default to low or "D"
             nn, data = build_strategy(risk)
 
+            # Make a prediction on the latest data
             latest_value = data.get_latest_values()
             decision = nn.predict(latest_value)
 
+            # Runs the decision process and logs the output
             take_action(decision)
 
+            # Asks user whats next
             next_action()
 
 
 if __name__ == "__main__":
+    load_dotenv()
+    # Creating the log file before anything else to avoid critial destruction
+    # .... also it probably shouldn't be a txt file....
+    if not os.path.exists("./user_log.txt"):
+        logger.write_log_file()
+
     main()
