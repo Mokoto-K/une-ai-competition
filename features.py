@@ -11,8 +11,9 @@
 # TODO - Self.selected_features to make it simplier when adding new feauters to The
 # dataset, one less place to update values... or three less places
 
+# TODO - Build cross validation, probably in the mykitlearn lib actually.
 import pandas as pd #""standing on the shoulders of giants - Issac Newton"... for now" - me
-from mykitlearn import NonStandardScaler, split_test_train, encode_labeler, UnstandardScaler # Screw the giants!
+from mykitlearn import NonStandardScaler, split_test_train, encode_labeler # Screw the giants!
 
 # Feature "engineering" (like im building bridges out here!)-------------------
 class DataFeatures:
@@ -232,7 +233,7 @@ class DataFeatures:
 
         self.create_target_labels()
         self.process_dates()
-#        self.process_time()
+        #        self.process_time()  # Currently breaks the nn when used as a feature.:
         self.calc_daily_change()
         self.calc_volitility()
         self.calc_volume()

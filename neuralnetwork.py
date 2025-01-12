@@ -207,7 +207,7 @@ class NeuralNetwork:
             self.params[f"b_{layer_id}"] -= self.learning_rate *db
 
             
-    def train(self, epochs=100):
+    def train(self, epochs=100, validation=None):
         """
         Trains the neural network on the input data
         """
@@ -228,8 +228,29 @@ class NeuralNetwork:
             self.back_prop(y_hat)
 
             if self.training and epoch % 100 == 0:
-                print(f"Epoch {epoch}, Loss: {total_loss:.4f}")
-        
+
+                # add validation scoring to the training to observe overtraining
+                if validation is not None: 
+                    X_val, y_val = validation
+
+                    # Handle conversion of dataframe to numpy array if needed...(it is)
+                    X_val = X_val.to_numpy() if hasattr(X_val, "to_numpy") else np.array(X_val)
+                    y_val = y_val.to_numpy() if hasattr(y_val, "to_numpy") else np.array(y_val)
+            
+                    # Reshape y_val to match training data shape
+                    if len(y_val.shape) == 1 or (len(y_val.shape) == 2 and y_val.shape[1] == 1):
+                        y_val = y_val.reshape(-1, 1)
+
+                    val_pred = self.predict(X_val)
+                    val_loss = self.loss_function(y_val, val_pred)
+
+                    print(f"Epoch {epoch:5} | Train Loss: {total_loss:.4f} | "
+                          f"Val Loss: {val_loss:.4f} | "
+                          f"diff: {(total_loss - val_loss):.4f}")
+
+                else:
+                    print(f"Epoch {epoch}, Loss: {total_loss:.4f}")
+
         if not self.training:
             print("Found a solution!\n")
 

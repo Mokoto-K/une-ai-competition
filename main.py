@@ -1,4 +1,4 @@
-# TODO - implement size if test acct is used.
+# .TODO - implement size if test acct is used.
 # TODO - Look at strategy for more control over trades and conditions
 # TODO - SO MUCH DOCUMENTATION MISSING
 # TODO - implement a testing class for easier tuning of the nn
@@ -87,18 +87,13 @@ def float_to_str(num: float) -> str:
 
 def take_action(decision) -> None:
     """
-    Depending on the ai's decision and the current position in the market, an 
-    action will be taken to either enter a position, maintain a position or 
-    close a position.
 
-    Params:
-    position - The current direction we are in the market
-    decision - The Neural networks decision on where to do next
     """
-    # TODO This whole logic may work at the moment but is extremely bug prone due 
-    # to alot of assumptions im making because we currently have complete control 
-    # over the test account we are using for this program, fix this to be more 
-    # safe to use for the future
+    # TODO - Giga refactor, why did i built this like this!?!?!
+    # TODO - Change the way positional and total profit is calculated, discrepency 
+    # between desired execution and actual execution due to few factors like
+    # liquidity, fee's, spread, slippage, etc cause miss reporting of pnl. Suggest calculating
+    # everything from the exchanges logs and bring it in instead of personal calcs
 
     # Create an instance of our exchange
     key = os.getenv("API_KEY")
@@ -106,7 +101,7 @@ def take_action(decision) -> None:
     bybit = Exchange(key, secret, testnet= True)
 
     # Translate the nn decision to a market action
-    decision = "Buy" if decision == 1 else "Sell"
+    decision = "Buy" if decision > 0.5 else "Sell"
     
     # Used for prettification of strings... and english... really
     direction = "Long" if decision == "Buy" else "Short"
@@ -137,21 +132,22 @@ def take_action(decision) -> None:
             price = f"${float(position_details[2]):,.2f}"
 
         else:
-            print(f"We are closing our {direction} position")
+            # TODO - CHECK ALL THE MATH
+            # commented out until bigger fix issued
+            # print(f"We are closing our {direction} position")
+            print("Market has flipped! Closing the current trade")
             # Keep size as a string for creating orders, even tho we use it for math
             size = position_details[1]
             open_price = str_to_float(position_details[2]) 
             close_price = float(bybit.get_price())
             percent_chg = (close_price - open_price) / open_price * 100
-            dollar_diff = close_price * float(size) - open_price * float(size)
+            dollar_diff =  close_price * float(size) - open_price * float(size)
             lpnl = f"${dollar_diff:,.2f} ({round(percent_chg, 2)}%)"
 
             # bybit.create_limit_order("linear", "BTCUSDT", decision, "Limit", size, "72000")
             # bybit.cancel_all() 
-            # Uncomment when ready for final testing
             bybit.create_market_order("linear", "BTCUSDT", decision, "Market", size)
 
-            # Changinge dir to nothing here instead of flipping pos, again think what you wanna do
             account_size += dollar_diff
             direction = "-"
             price = "-"
@@ -162,19 +158,16 @@ def take_action(decision) -> None:
         # TODO - write separate function that calcs size using risk and acct 
         risk_percent = 0.05     # This should be controlled by strategy module.
         size = str(round(max(account_size * risk_percent / float(bybit.get_price()), 0.001), 3))
-        # bybit.create_limit_order("linear", "BTCUSDT", decision, "Limit", size, "72000")
-        # TODO - Remove this once testing is done
-        # bybit.cancel_all()
 
         bybit.create_market_order("linear", "BTCUSDT", decision, "Market", size)
-        # This is needed when building out the program as we arnt sending orders yet
-        # So return vals arnt what they should be yet
-        price = position_details[2]
-        price = f"${float(price):,.2f}" if price != '' else '-'
+
+        price = f"${float(bybit.get_position()[2]):,.2f}"
         
     # Calcs for total pnl for account
-    dpnl = account_size - starting_bal
-    ppnl = dpnl / starting_bal * 100
+    # dpnl = account_size - starting_bal
+    # ppnl = dpnl / starting_bal * 100
+
+    dpnl, ppnl = trade_math(starting_bal, account_size)
     tpnl = f"${dpnl:,.2f} ({round(ppnl, 2)}%)"
 
     # TODO - FIX THIS! it works for 1 char timeframes but if i add more later
@@ -185,6 +178,13 @@ def take_action(decision) -> None:
     logger.write_log_file(strat, direction, price, f"${float(account_size):,.2f}", 
                           lpnl, tpnl, f"${float(starting_bal):,.2f}")
     logger.print_log()
+
+
+def trade_math(open: float, close: float):
+    difference = close  - open
+    percent_difference = difference / open * 100
+
+    return difference, percent_difference
 
 
 def create_env() -> None:
@@ -230,6 +230,7 @@ def validate_env():
         except Exception: 
             print("Error with api key/secret\n")
             create_env()
+
 
 def next_action():
 
@@ -298,3 +299,6 @@ if __name__ == "__main__":
         logger.write_log_file()
 
     main()
+
+    
+

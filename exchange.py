@@ -159,7 +159,6 @@ class Exchange:
 
         response = self._make_request("POST", "/v5/order/create", params)
 
-        print(response)
         # Return the response mostly for testing
         return response.json()
 

@@ -31,15 +31,61 @@ me more about what not to do instead of what to do, learning is learning I guess
 
 - Open up a terminal
 - Navigate to a directory you are happy cloning the project too
-- Type or copy & paste everything on the below line 
+- Type or copy & paste everything on the below line <br>
 https://github.com/Mokoto-K/une-ai-competition.git une-ai-competition-winning-entry
-- After the repo is cloned successfully type: python main.py or python3 main.py
-- To run the real account function you will have to enter the:
-api key = 
-secret = 
+- After the repo is cloned successfully type: python main.py or python3 main.py if you
+have any trouble running the python command, visit python.org for more information 
+on how to update your python distribution on your selected system.
+- To run the real account function you will have to enter the:<br>
+api key =  <br>
+secret =    <br>
 Don't worry it's just a test account for the competition, these keys arn't important.
 - Welcome to losing your retirement... house... family, everything really
 You'll have nothing, and you'll be happy.
+
+### Why bitcoin and why bybit
+
+- Bitcoin trades 24/7 so for a competition where I have no idea when someone may run
+the program, I need it to be able to produce results. Normal markets have open and 
+close times as well as are only open monday to friday. I'm only using bitcoin for 
+simplicities sake as a proof of concept, pulling this idea off at scale would be
+a very expensive task requiring access to many different assets and platforms which
+often require strict barriers of to entry.
+- Bybit is a simple exchange that can do everything I need for this project, they store 
+all historical data (for the last 1000 time periods of your choice) it's free to 
+start an account and use the data, no barrier to entry and a fully functional api 
+to build products off. These arn't commonly free things in the world of finance.
+- These are the main reasons why i've chosen to scale down my original idea and use
+just this one asset and this one exchange for the project.
+
+### Known problems
+
+- The entire project, it's one giant problem that weighs me down at night...
+- Problems displaying correct profit and loss due to self calculations of market
+data instead of replying on the exchange for all information (fixes needed in exchange
+and main) UPDATE: Partial fixes have been implemented, still not 100% accurate due
+to small fees and slippage, probably only exists for last pnl and no longer for total
+pnl, which was the more critical issue.
+- Display problems when entering a position after closing a previous one, this is 
+due to not swinging the position to the other side of the market like the nn wants 
+us to do, but instead just closing the current position. Easy fixes for this include
+doubling size when closing to flip position or creating a third state of not buy or sell
+but neutral. Both come with their advantages and problems.
+- Display issues when changing strategy, if the change causes a market flip, all displays
+connecting to position directions will display the inverse, fixes include a better flow
+of logging, or a more succint way of calculating variables for each trade. UPDATE: 
+switched out modular print statement for hardcoded one for time being.
+- Simulation is kind of a nightmare to view unless you pipe the output to a file to 
+read, auto creating a log file for it is probably the better solution for now.
+- A myriad of exchange errors if credentials are wrong or if there is an internet 
+issue. These issues are very bad and critial to the program running but not unless
+I do extensive testing over weeks to try and catch every possible issue with the 
+exchange, will it be bullet proof. Can only fix them as they come up at the moment.
+-:wq
+
+
+I will get around to fixing all of these when I have the time to refactor large chunks
+of the project as more hot fixes are causing more problems to stack up
 
 ### Extra Information
 I'll add more to this as I think of things
@@ -148,4 +194,14 @@ how it turned out, this became less about the ai and more about just getting all
 the pieces for a system to make trades and monitor those trades... kind of a nightmare
 to be honest. Back to C for a little bit to have a break from python!
 
-
+#### 12th of January, 2025
+Discovered some pretty critial bugs relating to the inner workings of trade calculations 
+nothing that's not fixable in time, but i currently am strapped for time to continue
+working on this project, I do have other things i've been putting off to do and an 
+exam to revise for. If it wasn't for this competition, at this point I would just 
+start the process of refactoring the parts that are bloated and not concise instead 
+of trying to patch a leaky ship... so with this in mind I might not try to patch 
+this leaky ship for the time being and if im able to get the fixes done in time then
+all good, and if not... well oh well, the project is far from being 100% completed 
+anyway and it currently is completely functional which is all that is needed. I made 
+big design mistakes at the start that im paying for now, its ok, lessons learnt.

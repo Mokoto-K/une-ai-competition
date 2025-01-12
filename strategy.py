@@ -35,7 +35,7 @@ def build_strategy(risk: str = "D"):
                              learning_rate = 0.1, training=False)
 
     # Train him
-    nn.train(5000)
+    nn.train(2000)
 
     # temp sending the file name this way, obvs refactor to a class shortly
     return nn, data 

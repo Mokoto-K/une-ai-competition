@@ -30,7 +30,7 @@ def read_log_file():
 def print_log():
     vars = read_log_file()
     log = (f"Current Strategy: {vars[0]}\nCurrent Position: {vars[1]}\n"
-            f"Open_price: {vars[2]}\nAccount Balance: {vars[3]}\n"
+            f"Open Price: {vars[2]}\nAccount Balance: {vars[3]}\n"
             f"Last trade PNL: {vars[4]}\nTotal PNL: {vars[5]}\n"
             f"Starting Bal: {vars[6]}")
     
