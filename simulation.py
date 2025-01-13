@@ -7,7 +7,7 @@ def run_simulation(strategy):
     # Neural network
     nn, data = strategy 
 
-    SIMULATIONS = 100
+    SIMULATIONS = 1000
     sim_data =  data.simulation_data(SIMULATIONS) 
     
     # Market open and closes

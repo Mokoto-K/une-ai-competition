@@ -1,16 +1,7 @@
-# The real TODO list
-# Rebuild main
-# Strategy builds a different netwrok using testing class to create a straty 
-# for each time frame
-# strategy returns risk amount for size calc
-
-# .TODO - implement size if test acct is used.
-# TODO - Look at strategy for more control over trades and conditions
+# TODO - Rebuild main
+# TODO - Strategy builds diff netwrok using testing class to create a strat
+# TODO - strategy returns risk amount for size calc
 # TODO - SO MUCH DOCUMENTATION MISSING
-# TODO - implement a testing class for easier tuning of the nn
-# TODO - Go through each file and look at the todos.
-# TODO - Replace all limit orders with market orders 
-# TODO - Add more features to train on
 
 import os
 from dotenv import load_dotenv
@@ -20,54 +11,20 @@ from exchange import Exchange
 import logger
 
 
-# TODO - get_choice and get_risk are the same func, fold them into one.
-def get_choice() -> bool:
+def get_choice(input_map) -> str | None:
+    
     """
-    Gets choice of simulation or real trading mode
+    Takes a map containing a question to ask the user and answers to return 
     """
-
-    choice = None
-    while choice == None:
-        user = input("Please select a task: \n" +
-            "Press 's' to run a simulation on the market \n" + 
-            "Press 'r' to run a real trade in the market \n\n" +
-            ">> ")
-        print()
-        if user.lower() == "s":
-            choice = True
-        elif user.lower() == "r":
-            choice = False 
-        else:
-            print("Please check that you have input a valid option\n")
-    os.system('cls||clear')
-    return choice
-
-
-def get_risk() -> str:
-    """
-    Gets the users choice of risk they would like to implement 
-
-    Returns:
-    risk - Either 1 for high risk of D for low risk, currently only two options
-           representing timeframe intervals that the nn looks over in the data
-    """
-
-    risk = None
-    while risk == None:
-        user = input("\nEnter the risk strategy you would like to take:\n" +
-                     "Press 'h' for high risk\n" + 
-                     "Press 'l' for low risk\n\n" +
-                     ">> ")
-        print()
-        if user.lower() == "h":
-            risk = "1 - High Risk"
-        elif user.lower() == "l":
-            risk = "D - Low Risk"
-        else:
-            print("Please check you input a valid option\n")
-    os.system('cls||clear')
-    return risk
-
+    while True:
+        user = input(input_map["question"])
+        for key in input_map["answers"].keys():
+            if user == key:
+                os.system('cls||clear')
+                return input_map["answers"][user]
+            else:
+                print("Please check that you have input a valid option\n")
+                
 
 # TODO - feel free to collapse these two functions into one converter conditional
 def str_to_float(num: str) -> float:
@@ -87,17 +44,22 @@ def float_to_str(num: float) -> str:
     Params:
     num
     """
-    return f"${num:,.2f}"
+    return f"${float(num):,.2f}"
+
+
+def trade_math(open: float, close: float):
+    difference = close  - open
+    percent_difference = difference / open * 100
+
+    return difference, percent_difference
 
 
 def take_action(decision, exchange) -> None:
     """
 
     """
-    # TODO - Giga refactor, why did i built this like this!?!?!
-
     bybit = exchange
-
+    
     # Translate the nn decision to a market action
     decision = "Buy" if decision > 0.5 else "Sell"
     
@@ -127,37 +89,16 @@ def take_action(decision, exchange) -> None:
     if position != "":
         if position == decision:
             print(f"We are in a {direction} and will remain {direction}")
-            price = f"${float(position_details[2]):,.2f}"
+            entry_price = f"${float(position_details[2]):,.2f}"
 
         else:
-            # TODO - CHECK ALL THE MATH
-            # commented out until bigger fix issued
             # print(f"We are closing our {direction} position")
             print("Market has flipped! Closing the current trade")
-            # Keep size as a string for creating orders, even tho we use it for math
-            size = position_details[1]
-            open_price = str_to_float(position_details[2]) 
-            close_price = float(bybit.get_price())
-            percent_chg = (close_price - open_price) / open_price * 100
-            dollar_diff =  close_price * float(size) - open_price * float(size)
-            lpnl = f"${dollar_diff:,.2f} ({round(percent_chg, 2)}%)"
-
-            bybit.create_market_order("linear", "BTCUSDT", decision, "Market", size)
-
-            account_size += dollar_diff
-            direction = "-"
-            price = "-"
-
+            direction, entry_price, account_size, lpnl = exit_trade(exchange, account_size, decision)
+            print("TODO THE NEW POSITION WE ARE IN")
     else:
         print(f"Not in any position, Entering a {direction}\n")
-
-        # TODO - write separate function that calcs size using risk and acct 
-        risk_percent = 0.05     # This should be controlled by strategy module.
-        size = str(round(max(account_size * risk_percent / float(bybit.get_price()), 0.001), 3))
-
-        bybit.create_market_order("linear", "BTCUSDT", decision, "Market", size)
-
-        price = f"${float(bybit.get_position()[2]):,.2f}"
+        entry_price = enter_trade(bybit, decision, account_size)
         
     # Calcs for total pnl for account
     dpnl, ppnl = trade_math(starting_bal, account_size)
@@ -168,17 +109,41 @@ def take_action(decision, exchange) -> None:
     # of optimizing!!!
     strat = logger.read_log_file()[0]
    
-    logger.write_log_file(strat, direction, price, f"${float(account_size):,.2f}", 
+    logger.write_log_file(strat, direction, entry_price, f"${float(account_size):,.2f}", 
                           lpnl, tpnl, f"${float(starting_bal):,.2f}")
     logger.print_log()
+    
+
+# TODO - Thin this function out.
+def exit_trade(exchange, account_size, nn_decision):
+    side, size, open_price, _ = exchange.get_position()
+    print(side, size, open_price, nn_decision)
+    open_price = str_to_float(open_price)
+    print(open_price)
+    # will use trade4 math function for this shortly
+    close_price = float(exchange.get_price())
+    percent_chg = (close_price - open_price) / open_price * 100
+    dollar_diff =  close_price * float(size) - open_price * float(size)
+    lpnl = f"${dollar_diff:,.2f} ({round(percent_chg, 2)}%)"
+    
+    exchange.market_order("linear", "BTCUSDT", nn_decision, "Market", size)
+
+    account_size += dollar_diff
+    entry_price = enter_trade(exchange, nn_decision, account_size)
+    direction = "Long" if nn_decision == "Buy" else "Short"
+
+    return direction, entry_price, account_size, lpnl
 
 
-def trade_math(open: float, close: float):
-    difference = close  - open
-    percent_difference = difference / open * 100
+def enter_trade(exchange, decision, account_size):
+    # TODO - write separate function that calcs size using risk and acct 
+    risk_percent = 0.05     # This should be controlled by strategy module.
+    size = str(round(max(account_size * risk_percent / float(exchange.get_price()), 0.001), 3))
 
-    return difference, percent_difference
+    exchange.market_order("linear", "BTCUSDT", decision, "Market", size)
 
+    return float_to_str(exchange.get_position()[2])
+    
 
 def validate_env_2_boogaloo():
     while True:
@@ -191,7 +156,7 @@ def validate_env_2_boogaloo():
             # TODO - Handle error correctly, big black hole for a user here
         except Exception: 
             if os.path.exists("./.env"):
-                print("Error with api key/secret\n")
+                print("Error reading the api key and secret\n")
 
             with open(".env", "w") as file:
                 api_key: str = input("Please enter your api key:\n")
@@ -207,25 +172,13 @@ def validate_env_2_boogaloo():
             load_dotenv(override = True)
 
 
-def next_action():
+def change_strategy():
+    logger.update_strategy_log(get_choice(risk_map))
 
-    while True:
-        user = input("What would you like to do?\nPress c to Change strategy\n"
-                         "Press e to exit\n\n>> ")
-        if user == "c":
-            #os.system('cls||clear')
-            strat = get_risk()
 
-            # ewww, bad bad bad design, figure out a way to work with the logs better
-            log = logger.read_log_file()
-            logger.write_log_file(strat, log[1], log[2], log[3], log[4], log[5], log[6])
-            break
-        elif user == "e":
-            # TODO - better bye message bro, something like check in later or something
-            print("see ya later")
-            exit(0)
-        else:
-            print("Command unknown, please make sure you are entering a valid command")
+def exit_program():
+    print("Check in later to see how the market is doing, see ya")
+    exit(0)
 
 
 def main():
@@ -233,10 +186,10 @@ def main():
     print("\nWelcome to self managing your retirement fund \n" + 
         "(This is a literal casino)\n")
 
-    sim = get_choice()
+    sim = get_choice(task_map)
 
     if sim:
-        risk = get_risk()
+        risk = get_choice(risk_map) 
         run_simulation(build_strategy(risk))
     else:
 
@@ -258,7 +211,7 @@ def main():
             take_action(decision, exchange)
 
             # Asks user whats next
-            next_action()
+            get_choice(command_map)()
 
 
 if __name__ == "__main__":
@@ -268,5 +221,22 @@ if __name__ == "__main__":
     if not os.path.exists("./user_log.txt"):
         logger.write_log_file()
 
-    main()
+    task_map = {"question" : "Please select a task: \n" +
+        "Press 's' to run a simulation on the market \n" + 
+        "Press 'r' to run a real trade in the market \n\n" + ">> ",
+                "answers": {"s": True, "r": False}}
 
+    risk_map = {"question": "\nEnter the risk strategy you would like to take:\n" +
+        "Press 'h' for high risk\n" + 
+        "Press 'l' for low risk\n\n" + ">> ", 
+                "answers": {"h": "1 - High risk", "l": "D - Low risk"}}
+
+
+    command_map = {"question": "What would you like to do?\n" + 
+        "Press c to Change strategy\n" + 
+        "Press e to exit\n\n" + ">> ",
+                   "answers": {"c": change_strategy, 
+                               "e": exit_program}}
+
+    main()
+    

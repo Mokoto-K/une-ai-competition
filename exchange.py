@@ -87,6 +87,12 @@ class Exchange:
         category - The contract type of your position, i.e 'linear', 'spot'
         symbol - The ticker name of the asset you have a position in i.e 'BTCUSDT',
                 default is 'None' so will return all... i believe.
+
+        Returns:
+        direction - 
+        size - 
+        price - 
+        query_status - return message from exchange
         """
         
         params=f'category={category}&symbol={symbol}'
@@ -148,7 +154,7 @@ class Exchange:
         return response.json()
 
 
-    def create_market_order(self, category, symbol, side, order_type, qty) -> str: 
+    def market_order(self, category, symbol, side, order_type, qty) -> str: 
         params = json.dumps({
                             "category": category,
                             "symbol": symbol,
@@ -158,7 +164,7 @@ class Exchange:
         })
 
         response = self._make_request("POST", "/v5/order/create", params)
-
+        print(response.json())
         # Return the response mostly for testing
         return response.json()
 

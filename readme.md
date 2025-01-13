@@ -205,3 +205,9 @@ this leaky ship for the time being and if im able to get the fixes done in time 
 all good, and if not... well oh well, the project is far from being 100% completed 
 anyway and it currently is completely functional which is all that is needed. I made 
 big design mistakes at the start that im paying for now, its ok, lessons learnt.
+
+#### 13th of January, 2025
+Busy day elsewhere, inside the project though, I made some small ground on the technical
+debt i've created in the main . py module in an attempt to just get a solution. It's 
+slow going as I build a somewhat jenga construction of functions to get this baby
+to work.

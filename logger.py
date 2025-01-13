@@ -35,3 +35,10 @@ def print_log():
             f"Starting Bal: {vars[6]}")
     
     print(f"{'-'*55}\n{log}\n{'-'*55}\n")
+
+
+# Painfully obvious this needs to be class, but im strapped for time... bandaids
+# for the moment, big fixes coming!!!
+def update_strategy_log(strategy):
+    log = read_log_file()
+    write_log_file(strategy, log[1], log[2], log[3], log[4], log[5], log[6])
