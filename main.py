@@ -1,3 +1,9 @@
+# The real TODO list
+# Rebuild main
+# Strategy builds a different netwrok using testing class to create a straty 
+# for each time frame
+# strategy returns risk amount for size calc
+
 # .TODO - implement size if test acct is used.
 # TODO - Look at strategy for more control over trades and conditions
 # TODO - SO MUCH DOCUMENTATION MISSING
@@ -84,21 +90,13 @@ def float_to_str(num: float) -> str:
     return f"${num:,.2f}"
 
 
-
-def take_action(decision) -> None:
+def take_action(decision, exchange) -> None:
     """
 
     """
     # TODO - Giga refactor, why did i built this like this!?!?!
-    # TODO - Change the way positional and total profit is calculated, discrepency 
-    # between desired execution and actual execution due to few factors like
-    # liquidity, fee's, spread, slippage, etc cause miss reporting of pnl. Suggest calculating
-    # everything from the exchanges logs and bring it in instead of personal calcs
 
-    # Create an instance of our exchange
-    key = os.getenv("API_KEY")
-    secret = os.getenv("API_SECRET")
-    bybit = Exchange(key, secret, testnet= True)
+    bybit = exchange
 
     # Translate the nn decision to a market action
     decision = "Buy" if decision > 0.5 else "Sell"
@@ -144,8 +142,6 @@ def take_action(decision) -> None:
             dollar_diff =  close_price * float(size) - open_price * float(size)
             lpnl = f"${dollar_diff:,.2f} ({round(percent_chg, 2)}%)"
 
-            # bybit.create_limit_order("linear", "BTCUSDT", decision, "Limit", size, "72000")
-            # bybit.cancel_all() 
             bybit.create_market_order("linear", "BTCUSDT", decision, "Market", size)
 
             account_size += dollar_diff
@@ -164,9 +160,6 @@ def take_action(decision) -> None:
         price = f"${float(bybit.get_position()[2]):,.2f}"
         
     # Calcs for total pnl for account
-    # dpnl = account_size - starting_bal
-    # ppnl = dpnl / starting_bal * 100
-
     dpnl, ppnl = trade_math(starting_bal, account_size)
     tpnl = f"${dpnl:,.2f} ({round(ppnl, 2)}%)"
 
@@ -187,49 +180,31 @@ def trade_math(open: float, close: float):
     return difference, percent_difference
 
 
-def create_env() -> None:
-    # TODO - Add more insrtuction like website to get account, to api, etc
-    # TODO - change this from true to be more specific, fine for now while dev
-    while True:
-        with open(".env", "w") as file:
-            api_key: str = input("Please enter your api key:\n")
-            api_secret: str = input("Please enter you api secret:\n")
-
-            print(f"{'-'*55}\nCREATING AUTHENTICATION LINK\n{'-'*55}")
-            
-            # TODO - Storing api keys as unprotected strings in a txt file i see... very good.
-            # we should just roll our own encryption to protect them while we are at it.
-            str_to_write: str = f"API_KEY={api_key}\nAPI_SECRET={api_secret}"
-            file.writelines(str_to_write)
-        
-        load_dotenv(override = True)
-
-        api_key = os.getenv("API_KEY") #
-        api_secret = os.getenv("API_SECRET") #
-        
-        try:
-            # We have to pass in the user provided variables as the env 
-            e = Exchange(api_key, api_secret, True)
-            e.get_position()
-            break
-            # TODO - Handle error correctly, big black hole for a user here
-        except Exception: 
-            print("Error with api key/secret, try again and check internet connection\n")
-
-
-# TODO - Pretty much just duplicating the func above but when an env file exists, 
-# better solution to this exist, come back to fix this 
-def validate_env():
+def validate_env_2_boogaloo():
     while True:
         try:
             # We have to pass in the user provided variables as the env 
             e = Exchange(os.getenv("API_KEY"), os.getenv("API_SECRET"), True)
             e.get_position()
-            break
+            return e
+
             # TODO - Handle error correctly, big black hole for a user here
         except Exception: 
-            print("Error with api key/secret\n")
-            create_env()
+            if os.path.exists("./.env"):
+                print("Error with api key/secret\n")
+
+            with open(".env", "w") as file:
+                api_key: str = input("Please enter your api key:\n")
+                api_secret: str = input("Please enter you api secret:\n")
+
+                print(f"{'-'*55}\nCREATING AUTHENTICATION LINK\n{'-'*55}")
+                
+                # TODO - Storing api keys as unprotected strings in a txt file i see... very good.
+                # we should just roll our own encryption to protect them while we are at it.
+                str_to_write: str = f"API_KEY={api_key}\nAPI_SECRET={api_secret}"
+                file.writelines(str_to_write)
+            
+            load_dotenv(override = True)
 
 
 def next_action():
@@ -265,12 +240,7 @@ def main():
         run_simulation(build_strategy(risk))
     else:
 
-        # Check for a valid .env file with valid api key and secret
-        if not os.path.exists("./.env"):
-            # Create env file 
-            create_env()
-        else:
-            validate_env()
+        exchange = validate_env_2_boogaloo()
 
         os.system('cls||clear')
 
@@ -285,7 +255,7 @@ def main():
             decision = nn.predict(latest_value)
 
             # Runs the decision process and logs the output
-            take_action(decision)
+            take_action(decision, exchange)
 
             # Asks user whats next
             next_action()
@@ -299,6 +269,4 @@ if __name__ == "__main__":
         logger.write_log_file()
 
     main()
-
-    
 
