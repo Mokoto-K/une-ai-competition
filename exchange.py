@@ -1,5 +1,4 @@
 # TODO - Fix all documentation when i have time
-# TODO - Remove post only EVENTUALLYT
 
 import requests
 import time
@@ -137,7 +136,6 @@ class Exchange:
         return returned_result
 
 
-    # TODO - REMOVE POST ONLY EVENTUALLYT
     def create_limit_order(self, category, symbol, side, order_type, qty, price, time_in_force="PostOnly"):
         params = json.dumps({
                             "category": category,
@@ -164,7 +162,7 @@ class Exchange:
         })
 
         response = self._make_request("POST", "/v5/order/create", params)
-        print(response.json())
+        # print(response.json())
         # Return the response mostly for testing
         return response.json()
 

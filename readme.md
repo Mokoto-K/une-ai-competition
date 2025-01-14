@@ -18,14 +18,59 @@ on the current position of the users account (bybit) and the output it calculate
 
 To get this project from where it is to it's final form will be a project to completely 
 finish at a later date. As of the 11th of January, 2025 the first version with bare minimum
-of features is ready to be used.
+features is ready to be used.
 
-When I first started this project, the idea was so simple in my head... I started writting
-the first few modules, the database, the neural net, even the features... then the scope
+When I started this project, the idea was so simple in my head... I started writting
+the first few modules, the database, the neural net, the features... then the scope
 creep kicked in and all of a sudden it turned into some kind of monster I lost control
 of towards the end just get all the basic functionality in. I hope to remedy the
 poor choice of design you may see scatter throughout the project. This project taught
 me more about what not to do instead of what to do, learning is learning I guess.
+
+UPDATE: Feels less monster like 4 days later, still structual problems that can be 
+fixed with a little more time and refactoring
+
+### How it does what it does
+
+Initially the user is asked to choose between running a simulation or a real trade. Assuming
+you choose to trade and you have credentials to trade i.e an api key and the secret,
+the program will read the user log file (or create one if one with default values if it doesn't exist) 
+for the strategy writtin within and send that to the database. The strategy is a timeframe that 
+the market trades on i.e 1minute, 5minute, 1hour, Day, etc. The database then either creates a 
+file for that strategy/timeframe or reads it in if it already exists. The database compares the last
+record it has to the realtime market and if the time stamps don't match, then it downloads
+the missing data to complete its records. 
+
+This database file is then used to create a set of features for the neural net to 
+train on. Once trained the program then executes a prediction on the current market 
+data and returns either a buy or sell event. Depending on if the event agrees or 
+disagrees with what the users account is currently doing, it will then either 
+1. do nothing (agrees)
+2. closes trade and opens another on the opposide side of the market(disagrees)
+3. or opens a trade as there is currently no trade active.
+
+All of this is controlled by the program and the neural net, the user doesn't have to 
+do anything. The user can choose to change which ever strategy is being used to trade
+though, currently only high and low risk straties exist. Each has subtle differences. 
+Low risk looks at the daily time frame and can really only make one trade a day, it 
+also uses a smaller percentage of the users account per trade. High risk looks at 
+the 1minute time frame... yes thats right, in glorious conditions it could technically
+execute 1440 trades a day... at a higher percentage of the users account.
+
+Currently the program isnt configured for automation of trading in the sense that 
+you start running the program and walk away for month to come back to a new yatch..
+This is due to the user needing to keep their computer on and running constantly, or 
+hosting it on a private webserver. Both options are not hard to setup but for the 
+scope of the une ai competition I felt it wasn't needed as no judge will sit there 
+for days watching 1 trade get executed.... that's what the simulation mode is for, it 
+simulates what the program looks autmated... roughly. I will implement automation 
+evetually, it remains to be seen if its before the 20th of January, there are more 
+important features and problems to implement and fix first. :w
+
+That's it, the project is far from perfect, there are alot of problems to fix, modules 
+to refactor and features to add. Feedback is very welcome, i'm new to developing programs, 
+using machine learning... computer science in general, the whole reason I entered this 
+competition was to see where I was at after one year of studying. Enjoy. 
 
 ### How to run
 
@@ -36,11 +81,11 @@ https://github.com/Mokoto-K/une-ai-competition.git une-ai-competition-winning-en
 - After the repo is cloned successfully type: python main.py or python3 main.py if you
 have any trouble running the python command, visit python.org for more information 
 on how to update your python distribution on your selected system.
-- To run the real account function you will have to enter the:<br>
+- To run the real account function (which is actually running on testnet) you will have to enter the:<br>
 api key =  <br>
 secret =    <br>
 Don't worry it's just a test account for the competition, these keys arn't important.
-- Welcome to losing your retirement... house... family, everything really
+- Welcome to losing your retirement... house... family, everything really<br>
 You'll have nothing, and you'll be happy.
 
 ### Why bitcoin and why bybit

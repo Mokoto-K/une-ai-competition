@@ -3,15 +3,23 @@
 # TODO - strategy returns risk amount for size calc
 # TODO - SO MUCH DOCUMENTATION MISSING
 
+# TODO - Grid search for strat class to train networks using nntrain class
+# TODO - Build more features
+# TODO - implement Automation 
+# TODO - Implement size calc, but not for use y_test
+# TODO - Rigorously check for no internet, no account bal, etc. type of bugs
+
 import os
+import time
 from dotenv import load_dotenv
 from simulation import run_simulation
 from strategy import build_strategy 
 from exchange import Exchange
 import logger
+import threading
 
 
-def get_choice(input_map) -> str | None:
+def get_choice(input_map, is_command = False):
     
     """
     Takes a map containing a question to ask the user and answers to return 
@@ -21,9 +29,11 @@ def get_choice(input_map) -> str | None:
         for key in input_map["answers"].keys():
             if user == key:
                 os.system('cls||clear')
-                return input_map["answers"][user]
+                val = input_map["answers"][user]
+                return val() if is_command else val
             else:
                 print("Please check that you have input a valid option\n")
+                os.system('cls||clear')
                 
 
 # TODO - feel free to collapse these two functions into one converter conditional
@@ -39,7 +49,7 @@ def str_to_float(num: str) -> float:
 
 def float_to_str(num: float) -> str:
     """
-    Converts a float to a string adding leading $ sign and two decimals
+    Formats a number string adding leading $ sign and two decimals
 
     Params:
     num
@@ -48,7 +58,10 @@ def float_to_str(num: float) -> str:
 
 
 def trade_math(open: float, close: float):
-    difference = close  - open
+    """
+    Calculates the int and percent difference between two numbers
+    """
+    difference = close - open
     percent_difference = difference / open * 100
 
     return difference, percent_difference
@@ -56,21 +69,18 @@ def trade_math(open: float, close: float):
 
 def take_action(decision, exchange) -> None:
     """
-
+    What doesn't this function do....
     """
     bybit = exchange
     
-    # Translate the nn decision to a market action
+    # Translate the nn decision to a market action & command
     decision = "Buy" if decision > 0.5 else "Sell"
-    
-    # Used for prettification of strings... and english... really
     direction = "Long" if decision == "Buy" else "Short"
 
     # Finds out if we are in a position or not. 
-    position_details = bybit.get_position(symbol="BTCUSDT") 
-    position = position_details[0]
+    side, size, entry_price, _ = bybit.get_position(symbol="BTCUSDT") 
 
-    # TODO -Rewrite this more eloquently you rusher!!!!!
+    # Check for zero balance
     account_size = bybit.get_balance()
     if account_size != "":
         account_size = str_to_float(account_size)
@@ -78,24 +88,26 @@ def take_action(decision, exchange) -> None:
         print("There is no balance in the supplied account")
         exit(0)
 
-    if logger.read_log_file()[6] == "None":
+    # Control for starting bal to be initiated and never changed
+    if logger.read_log_file()[7] == "None":
         starting_bal = account_size
     else:
-        starting_bal = str_to_float(logger.read_log_file()[6])
+        starting_bal = str_to_float(logger.read_log_file()[7])
      
     # The last trades profit and loss
+    cpnl = "-"
     lpnl = logger.read_log_file()[4]
-
-    if position != "":
-        if position == decision:
+    
+    if side != "":
+        if side == decision:
             print(f"We are in a {direction} and will remain {direction}")
-            entry_price = f"${float(position_details[2]):,.2f}"
+            cpnl = float_to_str(get_current_pnl(exchange))
+            entry_price = float_to_str(entry_price) 
 
         else:
-            # print(f"We are closing our {direction} position")
-            print("Market has flipped! Closing the current trade")
+            print(f"We are closing our {logger.read_log_file()[1]} position")
             direction, entry_price, account_size, lpnl = exit_trade(exchange, account_size, decision)
-            print("TODO THE NEW POSITION WE ARE IN")
+            print(f"Opening a {direction}")
     else:
         print(f"Not in any position, Entering a {direction}\n")
         entry_price = enter_trade(bybit, decision, account_size)
@@ -104,31 +116,45 @@ def take_action(decision, exchange) -> None:
     dpnl, ppnl = trade_math(starting_bal, account_size)
     tpnl = f"${dpnl:,.2f} ({round(ppnl, 2)}%)"
 
-    # TODO - FIX THIS! it works for 1 char timeframes but if i add more later
-    # it will be a big bug I either wont find or think of! FIX IT on the first run
-    # of optimizing!!!
-    strat = logger.read_log_file()[0]
-   
-    logger.write_log_file(strat, direction, entry_price, f"${float(account_size):,.2f}", 
-                          lpnl, tpnl, f"${float(starting_bal):,.2f}")
+    # Write and print the upodated information to the log file and stdoput
+    logger.write_log_file(logger.read_log_file()[0], direction, entry_price, cpnl,
+            lpnl, tpnl, float_to_str(account_size), float_to_str(starting_bal))
     logger.print_log()
-    
+
+
+# uncomrfotable with how this is written
+def get_current_pnl(exchange):
+    """
+    Calculates the difference between two values... similiar to trade_math..?
+    """
+    _, size, entry, _ = exchange.get_position()
+    current, size, entry = float(exchange.get_price()), float(size), float(entry)
+
+    return entry * size - current * size
+
 
 # TODO - Thin this function out.
 def exit_trade(exchange, account_size, nn_decision):
-    side, size, open_price, _ = exchange.get_position()
-    print(side, size, open_price, nn_decision)
-    open_price = str_to_float(open_price)
-    print(open_price)
-    # will use trade4 math function for this shortly
-    close_price = float(exchange.get_price())
-    percent_chg = (close_price - open_price) / open_price * 100
-    dollar_diff =  close_price * float(size) - open_price * float(size)
-    lpnl = f"${dollar_diff:,.2f} ({round(percent_chg, 2)}%)"
+    """
+    Closes an open position and enters a new trade in the opposite direction
+    """
+    # Querying exchange for information on the current trade
+    _, size, open_price, _ = exchange.get_position()
+
+    # Converting price and size to floats for some math on pnl
+    open_price, float_size = str_to_float(open_price), str_to_float(size)
+
+    # Calculating entry and exit values
+    close, open = float(exchange.get_price()) * float_size, open_price * float_size
+    dollar_difference, percent_difference =  trade_math(open, close)
+
+    # String containing dollar and precent pnl info for the log
+    lpnl = f"${dollar_difference:,.2f} ({round(percent_difference, 2)}%)"
     
+    # Close position
     exchange.market_order("linear", "BTCUSDT", nn_decision, "Market", size)
 
-    account_size += dollar_diff
+    account_size += dollar_difference
     entry_price = enter_trade(exchange, nn_decision, account_size)
     direction = "Long" if nn_decision == "Buy" else "Short"
 
@@ -146,10 +172,17 @@ def enter_trade(exchange, decision, account_size):
     
 
 def validate_env_2_boogaloo():
+    """
+    """
     while True:
         try:
             # We have to pass in the user provided variables as the env 
+            # Testnet is hard set to true here for une ai competition
             e = Exchange(os.getenv("API_KEY"), os.getenv("API_SECRET"), True)
+            # the sneakiest lambda you'll ever see. We have to do this here as 
+            # we want to pass the exchange object to automate and can't do it 
+            # when we defined our command map. alt could just create new exchange?
+            command_map["answers"]["a"] = lambda: automate(e)
             e.get_position()
             return e
 
@@ -164,8 +197,9 @@ def validate_env_2_boogaloo():
 
                 print(f"{'-'*55}\nCREATING AUTHENTICATION LINK\n{'-'*55}")
                 
-                # TODO - Storing api keys as unprotected strings in a txt file i see... very good.
-                # we should just roll our own encryption to protect them while we are at it.
+                # TODO - Storing api keys as unprotected strings in a txt file i 
+                # see... very good. we should just roll our own encryption to 
+                # protect them while we are at it.
                 str_to_write: str = f"API_KEY={api_key}\nAPI_SECRET={api_secret}"
                 file.writelines(str_to_write)
             
@@ -175,6 +209,56 @@ def validate_env_2_boogaloo():
 def change_strategy():
     logger.update_strategy_log(get_choice(risk_map))
 
+    
+def exit_automation(exit_event):
+    while True:
+        user = input()
+        if user.lower() == '':
+            exit_event.set()
+            print("\nLeaving Automation mode...")
+            break
+
+# TODO - Would rather have some kind of observer pattern watching the market updating
+# instead of using sleep, but ducktape and bandaids for now.
+def automate(exchange):
+    strat_map = {"1": 60, "5": 300, "15": 900, "H": 3600, "4": 14400, "D": 86400}
+
+    # Set up our thread to cancel automation mode
+    exit_event = threading.Event()
+    key_thread = threading.Thread(target = exit_automation, args = (exit_event, ))
+    key_thread.daemon = True
+    key_thread.start()
+
+    while True:
+        # if exit_event.is_set():
+        #     break
+
+        risk = logger.read_log_file()[0].split(" ")[0] 
+        # reads risk from log file, default to low or "D"
+        nn, data = build_strategy(risk)
+        # Make a prediction on the latest data
+        decision = nn.predict(data.get_latest_values())
+        # Runs the decision process and logs the output
+        take_action(decision, exchange)
+        
+        time_remaining = 11 #strat_map[risk]
+        
+        start = time.time()
+        print("Hit 'enter' at any point to exit automation mode")
+        while time_remaining > 0:
+            if exit_event.is_set():
+                return       
+
+            if time.time() - start > 1:
+                time_remaining -= 1  
+                start = time.time()
+
+            print(f"Time before next decision: {time_remaining} seconds", end="\r")
+            time.sleep(0.1)
+            
+            # print("\033[A       \033[A")
+        os.system("cls||clear")
+    
 
 def exit_program():
     print("Check in later to see how the market is doing, see ya")
@@ -204,14 +288,13 @@ def main():
             nn, data = build_strategy(risk)
 
             # Make a prediction on the latest data
-            latest_value = data.get_latest_values()
-            decision = nn.predict(latest_value)
-
+            decision = nn.predict(data.get_latest_values())
+             
             # Runs the decision process and logs the output
             take_action(decision, exchange)
 
             # Asks user whats next
-            get_choice(command_map)()
+            get_choice(command_map, True)
 
 
 if __name__ == "__main__":
@@ -234,6 +317,7 @@ if __name__ == "__main__":
 
     command_map = {"question": "What would you like to do?\n" + 
         "Press c to Change strategy\n" + 
+        "Press a to Automate trading\n" + 
         "Press e to exit\n\n" + ">> ",
                    "answers": {"c": change_strategy, 
                                "e": exit_program}}

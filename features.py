@@ -8,10 +8,8 @@
 
 # TODO - Implement with no pandas, just numpy
 
-# TODO - Self.selected_features to make it simplier when adding new feauters to The
-# dataset, one less place to update values... or three less places
-
 # TODO - Build cross validation, probably in the mykitlearn lib actually.
+
 import pandas as pd #""standing on the shoulders of giants - Issac Newton"... for now" - me
 from mykitlearn import NonStandardScaler, split_test_train, encode_labeler # Screw the giants!
 
@@ -41,6 +39,10 @@ class DataFeatures:
         self.dates = self.market_data.date
         self.time = self.market_data.time
 
+        # To hold features that need scaling and filter list for training
+        self.selected_features = []
+        self.scale_features = []
+
     def create_target_labels(self) -> None:
         """
         Creates binary labels for the dataset to be used in training
@@ -52,13 +54,13 @@ class DataFeatures:
             target.append("long" if self.price_close[i] > self.price_open[i] else "short") 
     
         self.market_data["target"] = target 
+        self.selected_features.append("target")
 
 
     def process_dates(self) -> None:
         """
         Strips out the date str from the data and splits it into day and month
         """
-        
         day_list: list = []
         month_list: list = []
     
@@ -71,9 +73,8 @@ class DataFeatures:
             month_list.append(month)
     
         self.market_data["day"], self.market_data["month"] = day_list, month_list 
-    
-        # Don't need the old date 
-        # self.market_data.drop(["date"], axis = 1, inplace = True)
+        self.selected_features.append("day")
+        self.selected_features.append("month")
 
 
     def process_time(self) -> None:
@@ -108,6 +109,9 @@ class DataFeatures:
             daily_change.append(round(change,8))
     
         self.market_data["daily_change"] = daily_change
+        self.selected_features.append("daily_change")
+        self.scale_features.append("daily_change")
+
 
 
     # TODO - Consider an offset to help predict current day
@@ -125,6 +129,8 @@ class DataFeatures:
     
     
         self.market_data["volitility"] = volitility 
+        self.selected_features.append("volitility")
+        self.scale_features.append("volitility")
 
 
     # TODO - Change what's being diveded by and use a standard scaling technique
@@ -140,6 +146,8 @@ class DataFeatures:
             volume.append(self.price_volume[row - 1] / 100000000)
 
         self.market_data["volume"] = volume 
+        self.selected_features.append("volume")
+        self.scale_features.append("volume")
 
 
 # TODO - MOAR FEATURES, such as:
@@ -170,11 +178,7 @@ class DataFeatures:
         random_state - Set the random seed for the shuffling process when splitting
                        the data, set to ensure consistent results.
         """
-
-        selected_features: list =["day", "month","daily_change", "volitility", 
-                                  "volume", "target"] 
-    
-        X = self.market_data.filter(selected_features)
+        X = self.market_data.filter(self.selected_features)
     
         X_full, X_test, y_full, y_test = split_test_train(X.drop("target", axis = 1), 
                                                       X.target,
@@ -186,15 +190,12 @@ class DataFeatures:
         y_val, y_train = y_full[:100], y_full[100:]
         
         # Implement our originally thought of and created scalling strategy
-        # TODO - Make these variables a maintainable list init in init and updated
-        # every time I create a feature. Same with the other lists of feautures
-        scale_features = ["daily_change", "volitility", "volume"]
-        self.unstandardScaler.fit(X_train[scale_features])
+        self.unstandardScaler.fit(X_train[self.scale_features])
 
         # THIS WAS NOT WORTH IT, HOLY SHIT IMPLEMENTING MY OWN SCALING WAS A NIGHTMARE
-        X_train.loc[:, scale_features] = self.unstandardScaler.transform(X_train[scale_features])
-        X_val.loc[:, scale_features] = self.unstandardScaler.transform(X_val[scale_features])
-        X_test.loc[:, scale_features] = self.unstandardScaler.transform(X_test[scale_features])
+        X_train.loc[:, self.scale_features] = self.unstandardScaler.transform(X_train[self.scale_features])
+        X_val.loc[:, self.scale_features] = self.unstandardScaler.transform(X_val[self.scale_features])
+        X_test.loc[:, self.scale_features] = self.unstandardScaler.transform(X_test[self.scale_features])
                 
 
         return X_train, X_test, X_val, y_train, y_test, y_val
@@ -204,26 +205,18 @@ class DataFeatures:
         """
         Used to run a simulation of the market if i choose to implement it...
         """
-        selected_features: list =["day", "month", "daily_change", "volitility", 
-                                  "volume"]
+        # Filter which features we want minus the target vals [1:]
+        sim_data = self.market_data[-simulations:].filter(self.selected_features[1:])
 
-        scale_features = ["daily_change", "volitility", "volume"]
-
-        sim_data = self.market_data[-simulations:].filter(selected_features)
-
-        sim_data[scale_features] = self.unstandardScaler.transform(sim_data[scale_features])
+        sim_data[self.scale_features] = self.unstandardScaler.transform(sim_data[self.scale_features])
         return sim_data
 
 
     def get_latest_values(self):
-        selected_features: list =["day", "month","daily_change", "volitility", 
-                                  "volume"]
 
-
-        scale_features = ["daily_change", "volitility", "volume"]
-        latest_vals = self.market_data[-1:].filter(selected_features)
-
-        latest_vals[scale_features] = self.unstandardScaler.transform(latest_vals[scale_features])
+        # self.selected_features[1:] cuts the target labels out of the filtered vals
+        latest_vals = self.market_data[-1:].filter(self.selected_features[1:])
+        latest_vals[self.scale_features] = self.unstandardScaler.transform(latest_vals[self.scale_features])
         return latest_vals
 
     def process_all_features(self) -> None:
@@ -243,4 +236,3 @@ class DataFeatures:
 if __name__ == "__main__":
     #feat = DataFeatures("./BTCUSDT_1_Data.csv")
     pass
-

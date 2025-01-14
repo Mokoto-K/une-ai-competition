@@ -1,4 +1,4 @@
-# TODO - Turn this into a presentable file.... 
+# TODO - Turn this into a readable file instead of a reflection of your brain.... 
 # TODO - Pull everything into methods so its not so busy in that loop
 from strategy import build_strategy 
 from time import sleep
@@ -32,7 +32,7 @@ def run_simulation(strategy):
         trade_pnl = "-"    
         decision = "long" if predictions[i] > 0.5 else "short"
 
-        print(f"{'-'*55}\nDecision {i + 1}\nDate: {price_date}")
+        print(f"{'-'*55}\nDecision {i + 1}/{SIMULATIONS}\nDate: {price_date}")
         print(f"Account opening bal: ${round(ACCT_SIZE, 2):,.2f}")
         
         c_pos = "Long" if POS == "long" else "Short" if POS == "short" else "None"
@@ -71,9 +71,9 @@ def run_simulation(strategy):
 
         ACCT_MAX = ACCT_SIZE if ACCT_SIZE > ACCT_MAX else ACCT_MAX
         ACCT_LOW = ACCT_SIZE if ACCT_SIZE < ACCT_LOW else ACCT_LOW
+        sleep(0.05)
 
     print(f"\nAccount reach a high of: {ACCT_MAX} and a low of: {ACCT_LOW}")
-        #sleep(1)
 
 if __name__ == "__main__":
     run_simulation(build_strategy("1")) 

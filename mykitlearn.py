@@ -1,3 +1,6 @@
+# This class is great but was the source of most pain in the project, could have
+# just used scikitlearn.
+
 import numpy as np
 import pandas as pd
 
@@ -54,12 +57,10 @@ def split_test_train(X, y, test_size = 0.2, random_state = None) -> tuple:
 # Ok I did practically use sklearns labelencoder for this one.... i did change 
 # the name though... an original thought!
 class encode_labeler:
-# TODO - Rewrite with y init so that its not needed to be passed in on uno_reverse
-# TODO - Write up documentation at some point when there are less things to do
 
     def fit(self, y):
         """
-          
+        Converts each unqiue instant of our char/str labels into an int val and index          
         """
 
         self.classes_ = np.unique(y)
@@ -71,78 +72,24 @@ class encode_labeler:
 
     def transform(self, y):
         """
-          
+        Creates a numpy array out of our converted vals 
         """
         return np.array([self._mapping[val] for val in y])
 
 
     def fit_transform(self, y):
         """
-          
+        Combines the converting and creating of our labels to a numpoy array 
         """
         return self.fit(y).transform(y)
 
 
     def uno_reverse_transform(self, y):
         """
-          
+        ever played uno? ever use the reverse? ever done math? *raises eyebrows twice
+        at you*
         """
         return self.classes_[y]
-
-
-class UnstandardScaler():
-
-    def __init__(self) -> None:
-        self.mean = None
-        self.scale = None
-        
-
-    def fit(self, X):
-        """
-        Fits the passed in data to the scaler by calculating the mean and std
-        of the data, saving them as class variables
-        """
-
-        self.mean = np.mean(X, axis=0)
-        self.scale = np.std(X, axis=0, ddof=1)
-
-        # checks zero std situation
-        self.scale = np.where(self.scale == 0, 1.0, self.scale)
-
-        return self
-
-
-    def transform(self, X):
-        """
-        Standardizes the data by removing the mean and scaling the variance
-        """
-
-        if self.mean is None or self.scale is None:
-            raise ValueError("Scaler has not been fitted yet. Call 'fit' first.")
-
-        # if isinstance(X, pd.DataFrame):
-        #     return pd.DataFrame(
-        #             columns = X.columns)
-        
-        if isinstance(X, pd.DataFrame):
-            X_array = X.values
-            if X_array.shape[1] != self.mean.shape[0]:
-                raise ValueError(
-                    f"Mismatch: X has {X_array.shape[1]} features but scaler expects {self.mean.shape[0]} features."
-                )
-            standardized = (X_array - self.mean) / self.scale
-            return pd.DataFrame(standardized, index=X.index, columns=X.columns)
-
-
-        X = np.array(X)
-        return (X - self.mean) / self.scale
-
-
-    def fit_transform(self, X):
-        """
-        Fit and transform the data in one.
-        """
-        return self.fit(X).transform(X)
 
 
 # THIS WAS A TERRIBLE IDEA, THE PROBLEMS I HAD WERE NOT WORTH IT!!!!!
@@ -158,9 +105,10 @@ class NonStandardScaler:
         of the data, saving them as class variables
         """
         
+        # controls for what X may be.... pain 
         if isinstance(X, pd.DataFrame):
 
-            self.mean_ = X.mean().values
+            self.mean_ = X.mean().values            #.values CAUSED SO MUCH PAIN
             self.scale_ = X.std(ddof=0).values
         else:
 
@@ -181,6 +129,7 @@ class NonStandardScaler:
         if self.mean_ is None or self.scale_ is None:
             raise ValueError("Scaler has not been fitted yet. Call 'fit' first.")
 
+        # Controlling for panadas or numpy ds again
         if isinstance(X, pd.DataFrame):
             return pd.DataFrame(
                 (X.values - self.mean_) / self.scale_,
@@ -197,3 +146,56 @@ class NonStandardScaler:
         """
         return self.fit(X).transform(X)
 
+
+# class UnstandardScaler():
+#
+#     def __init__(self) -> None:
+#         self.mean = None
+#         self.scale = None
+#
+#
+#     def fit(self, X):
+#         """
+#         Fits the passed in data to the scaler by calculating the mean and std
+#         of the data, saving them as class variables
+#         """
+#
+#         self.mean = np.mean(X, axis=0)
+#         self.scale = np.std(X, axis=0, ddof=1)
+#
+#         # checks zero std situation
+#         self.scale = np.where(self.scale == 0, 1.0, self.scale)
+#
+#         return self
+#
+#
+#     def transform(self, X):
+#         """
+#         Standardizes the data by removing the mean and scaling the variance
+#         """
+#
+#         if self.mean is None or self.scale is None:
+#             raise ValueError("Scaler has not been fitted yet. Call 'fit' first.")
+#
+#         # Check for pandas dataframe over numpy array (this caused me a slow death)
+#         if isinstance(X, pd.DataFrame):
+#             X_array = X.values
+#             if X_array.shape[1] != self.mean.shape[0]:
+#                 raise ValueError(
+#                     f"Mismatch: X has {X_array.shape[1]} features but scaler expects {self.mean.shape[0]} features."
+#                 )
+#             standardized = (X_array - self.mean) / self.scale
+#             return pd.DataFrame(standardized, index=X.index, columns=X.columns)
+#
+#         # scale if its a numpy array
+#         X = np.array(X)
+#         return (X - self.mean) / self.scale
+#
+#
+#     def fit_transform(self, X):
+#         """
+#         Fit and transform the data in one.
+#         """
+#         return self.fit(X).transform(X)
+#
+#

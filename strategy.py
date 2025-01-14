@@ -3,6 +3,7 @@
 # TODO - Have the nural net decide what risk strategy based on market conditions
 # TODO - :wq
 
+# TODO - use grid search and the likes to train a few different instantces for strat to find
 from features import DataFeatures
 from neuralnetwork import NeuralNetwork
 from database import Database
@@ -37,9 +38,7 @@ def build_strategy(risk: str = "D"):
     # Train him
     nn.train(2000)
 
-    # temp sending the file name this way, obvs refactor to a class shortly
-    return nn, data 
-    # return X_train, y_train, "binary", architecture, 0.1
+    return nn, data
 
     
 if __name__ == "__main__":

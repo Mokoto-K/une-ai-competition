@@ -221,7 +221,9 @@ class NeuralNetwork:
             loss = self.loss_function(self.y, y_hat)
 
             # Implementation of L2 reg hopefully to help generalize better.
-            l2_penalty = (self.l2 / (2 * self.X.shape[0])) * sum(np.sum(np.square(self.params[f"W_layer_{i + 1}"])) for i in range(len(self.layers)))
+            l2_penalty = (self.l2 / (2 * self.X.shape[0])) * sum(np.sum(
+                np.square(self.params[f"W_layer_{i + 1}"]))
+                for i in range(len(self.layers)))
             total_loss = loss + l2_penalty
             
             self.loss_history.append(loss)
