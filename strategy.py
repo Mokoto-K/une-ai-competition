@@ -3,7 +3,6 @@
 # TODO - Have the nural net decide what risk strategy based on market conditions
 # TODO - :wq
 
-# TODO - use grid search and the likes to train a few different instantces for strat to find
 from features import DataFeatures
 from neuralnetwork import NeuralNetwork
 from database import Database
@@ -18,14 +17,14 @@ def build_strategy(risk: str = "D"):
     data = DataFeatures(file_path)
     data.process_all_features()
 
-    # Get the data for the nn
-    X_train, X_test, X_val, y_train, y_test, y_val = data.prep_data()
+    # Get the data for the nn, no need for test or val data, testing done elsewhere
+    X_train, _, _, y_train, _, _= data.prep_data()
 
     # Structure for the nn
-    architecture = [{"neurons": 5, "activation": "relu"},
+    architecture = [{"neurons": 9, "activation": "relu"},
+                    {"neurons": 7, "activation": "relu"},
                     {"neurons": 5, "activation": "relu"},
                     {"neurons": 3, "activation": "relu"},
-                    {"neurons": 2, "activation": "relu"},
                     {"neurons": 1, "activation": "sigmoid"}
                     ]
 
@@ -38,7 +37,9 @@ def build_strategy(risk: str = "D"):
     # Train him
     nn.train(2000)
 
-    return nn, data
+    # TODO - Find a better way to define risk amount, like a map maybe
+    risk_percentage: float = 0.03 if risk == "D" else 0.05
+    return nn, data, risk_percentage
 
     
 if __name__ == "__main__":

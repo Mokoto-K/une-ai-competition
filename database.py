@@ -23,6 +23,8 @@ class Database:
         self.file_name: str = f"{self.asset_name}_{self.time_frame}_Data.csv"
 
 
+    # TODO - It appears the internet check isnt working, added temp try/excepts
+    # fix this bug asap!!
     def test_connection(self) -> int:
         """
         A test to check for internet connection prior to sending requests
@@ -30,7 +32,7 @@ class Database:
     
         try:
             r.get(self.ohlc_url)
-        except r.RequestException:
+        except Exception:
             print("Trouble retrieving your request, check if the exchange api is up\
             and running, check your internet connection and double check what you are\
             requesting")
@@ -139,10 +141,15 @@ class Database:
         
         print("CHECKING IF DATABASE IS UP TO DATE")
         records_to_retrieve = 1 
-    
-        # Query the exchange to get the lastest data & extract just the unix timestamp
-        lastest_ts = float(self.query_exchange(limit = 1)[0][0].split(",")[0]) / 1000
-        
+       
+        try:
+            # Query the exchange to get the lastest data & extract just the unix timestamp
+            lastest_ts = float(self.query_exchange(limit = 1)[0][0].split(",")[0]) / 1000
+        except Exception:
+            print("You seem to have lost connection with the exchange, check your internet "+
+                "or visit bybit.com to check their current status")
+            exit(0)
+
         # Get the last three records from the db (3 to be safe)
         recent_utc_timestamps: list = self.get_records(3)
     
@@ -219,7 +226,9 @@ class Database:
                 self.create_DB()
             else: 
                 self.update_DB()
-    
+        else:
+            print("Cannot connect to exchange, check your internet connect or"+  
+                " visit bybit.com to check for their currect operation status")
         print(f"{'-'*55}\n{'-'*55}")
 
     

@@ -1,16 +1,13 @@
-# rTODO - This needs to be reworked more modular so that any indices passed in 
-# can have its own set of features? or perhaps once I train le algo I will know
-# how to contruct the right set of features correctly? come back to this.
-
-# TODO - Actually figure out what features you need to not lose your house in the
+# TODO - Implement with no pandas, just numpy
+# TODO - figure out what features you need to not lose your house in the
 # market(i suspect this is incredibly difficult and unsolvable, edge is hard to, 
 # find) for now hardcorde basic things, rework once solution is up and running.
 
-# TODO - Implement with no pandas, just numpy
-
 # TODO - Build cross validation, probably in the mykitlearn lib actually.
 
-import pandas as pd #""standing on the shoulders of giants - Issac Newton"... for now" - me
+from shutil import move
+from numpy import append
+import pandas as pd         #""standing on the shoulders of giants - Issac Newton"... for now" - me
 from mykitlearn import NonStandardScaler, split_test_train, encode_labeler # Screw the giants!
 
 # Feature "engineering" (like im building bridges out here!)-------------------
@@ -149,7 +146,24 @@ class DataFeatures:
         self.selected_features.append("volume")
         self.scale_features.append("volume")
 
+    def moving_average(self):
+        moving_avg = []
 
+        sum = 0
+        for row in range(len(self.price_close)):
+            sum += self.price_close[row]
+            
+            if row >=30:
+                sum -= self.price_close[row - 30]
+
+            if row >= 30 -1:
+                moving_avg.append(sum / 30)
+            else:
+                moving_avg.append(sum / (row + 1)) 
+            
+        self.market_data["moving_average"] = moving_avg
+        self.selected_features.append("moving_average")
+        self.scale_features.append("moving_average")
 # TODO - MOAR FEATURES, such as:
 # TODO - Price moving average
 # TODO - % change moving average
@@ -230,9 +244,12 @@ class DataFeatures:
         self.calc_daily_change()
         self.calc_volitility()
         self.calc_volume()
+        self.moving_average()
         self.encode_features()
 
 
 if __name__ == "__main__":
-    #feat = DataFeatures("./BTCUSDT_1_Data.csv")
+    # feat = DataFeatures("./BTCUSDT_1_Data.csv")
+    # feat.process_all_features()
+    # print(feat)
     pass

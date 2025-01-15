@@ -18,7 +18,8 @@ class Exchange:
     URL = "https://api.bybit.com"
 
     
-    def __init__(self, api_key, api_secret, testnet: bool = False):
+    def __init__(self, api_key = None, api_secret = None, testnet: bool = False):
+    
         self.api_key = api_key
         self.api_secret = api_secret
         self.time_stamp = str(int(time.time() * 1000))
@@ -28,6 +29,20 @@ class Exchange:
             self.base_url = "https://api-testnet.bybit.com"
         else:
             self.base_url = "https://api.bybit.com"
+
+
+    def test_connection(self):
+        try:
+            requests.get(self.base_url+"/v5/market/time")
+            return 1
+        except Exception:
+            print("Could not connect to bybit's servers, try again later")
+            exit(0)
+
+
+    def authenticate_connection(self, api_key, api_secret):
+        self.api_key = api_key
+        self.api_secret = api_secret
 
 
     def _generate_signature(self, params) -> str:

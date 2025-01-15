@@ -65,7 +65,7 @@ scope of the une ai competition I felt it wasn't needed as no judge will sit the
 for days watching 1 trade get executed.... that's what the simulation mode is for, it 
 simulates what the program looks autmated... roughly. I will implement automation 
 evetually, it remains to be seen if its before the 20th of January, there are more 
-important features and problems to implement and fix first. :w
+important features and problems to implement and fix first.<br> UPDATE - Automation is in.
 
 That's it, the project is far from perfect, there are alot of problems to fix, modules 
 to refactor and features to add. Feedback is very welcome, i'm new to developing programs, 
@@ -256,3 +256,15 @@ Busy day elsewhere, inside the project though, I made some small ground on the t
 debt i've created in the main . py module in an attempt to just get a solution. It's 
 slow going as I build a somewhat jenga construction of functions to get this baby
 to work.
+
+#### 15th of January, 2025
+Didn't write in the log yesterday, was too busy filling other information in the 
+readme. Yesterday I added automation to the program, today I tried to add some 
+more features and tune the NN.... alas, it is impossible to just "tune" an NN into
+being a rpofitable trader, a lot more research is needed to find an edge for it 
+to use. This is probably the big glaring hole in this project... this and main.py..
+that place sucks right now, incredibly unhappy how much short cutting and ducktape
+i've used to bring that together. Iwill refactor this project, but I dont have the 
+time to do it before the dealine. Anyway, today was more refinement and trying to 
+fix small bugs that pop up everywhere. Probably finished at this point, perhaps just
+some small decisions, we will see what tomorrow brings, hopefully the end to this.:w

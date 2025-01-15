@@ -42,7 +42,7 @@ def print_log():
     log = (f"Current Strategy: {vars[0]}\nCurrent Position: {vars[1]}\n"
            f"Open Price: {vars[2]}\nCurrent PNL: {vars[3]}\n"
            f"Last trade PNL: {vars[4]}\nTotal PNL: {vars[5]}\n"
-           f"Account Bal: {vars[6]}\n")
+        f"Account Bal: {vars[6]}\nStarting Bal: {vars[7]}\n")
             # f"Starting Bal: {vars[6]}")
     
     print(f"{'-'*55}\n{log}\n{'-'*55}\n")
@@ -52,4 +52,4 @@ def print_log():
 # for the moment, big fixes coming!!!
 def update_strategy_log(strategy):
     log = read_log_file()
-    write_log_file(strategy, log[1], log[2], log[3], log[4], log[5], log[6])
+    write_log_file(strategy, log[1], log[2], log[3], log[4], log[5], log[6], log[7])

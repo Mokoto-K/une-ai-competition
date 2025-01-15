@@ -1,17 +1,12 @@
-# TODO - Rebuild main
-# TODO - Strategy builds diff netwrok using testing class to create a strat
-# TODO - strategy returns risk amount for size calc
-# TODO - SO MUCH DOCUMENTATION MISSING
-
-# TODO - Grid search for strat class to train networks using nntrain class
 # TODO - Build more features
-# TODO - implement Automation 
 # TODO - Implement size calc, but not for use y_test
 # TODO - Rigorously check for no internet, no account bal, etc. type of bugs
+# TODO - SO MUCH DOCUMENTATION MISSING
 
 import os
 import time
 from dotenv import load_dotenv
+from database import Database
 from simulation import run_simulation
 from strategy import build_strategy 
 from exchange import Exchange
@@ -67,7 +62,7 @@ def trade_math(open: float, close: float):
     return difference, percent_difference
 
 
-def take_action(decision, exchange) -> None:
+def take_action(decision, exchange, risk) -> None:
     """
     What doesn't this function do....
     """
@@ -106,11 +101,14 @@ def take_action(decision, exchange) -> None:
 
         else:
             print(f"We are closing our {logger.read_log_file()[1]} position")
-            direction, entry_price, account_size, lpnl = exit_trade(exchange, account_size, decision)
+            direction, entry_price, account_size, lpnl = exit_trade(exchange, 
+                                                                    account_size, 
+                                                                    decision,
+                                                                    risk)
             print(f"Opening a {direction}")
     else:
         print(f"Not in any position, Entering a {direction}\n")
-        entry_price = enter_trade(bybit, decision, account_size)
+        entry_price = enter_trade(bybit, decision, account_size, risk)
         
     # Calcs for total pnl for account
     dpnl, ppnl = trade_math(starting_bal, account_size)
@@ -134,7 +132,7 @@ def get_current_pnl(exchange):
 
 
 # TODO - Thin this function out.
-def exit_trade(exchange, account_size, nn_decision):
+def exit_trade(exchange, account_size, nn_decision, risk):
     """
     Closes an open position and enters a new trade in the opposite direction
     """
@@ -155,17 +153,15 @@ def exit_trade(exchange, account_size, nn_decision):
     exchange.market_order("linear", "BTCUSDT", nn_decision, "Market", size)
 
     account_size += dollar_difference
-    entry_price = enter_trade(exchange, nn_decision, account_size)
+    entry_price = enter_trade(exchange, nn_decision, account_size, risk)
     direction = "Long" if nn_decision == "Buy" else "Short"
 
     return direction, entry_price, account_size, lpnl
 
 
-def enter_trade(exchange, decision, account_size):
-    # TODO - write separate function that calcs size using risk and acct 
-    risk_percent = 0.05     # This should be controlled by strategy module.
-    size = str(round(max(account_size * risk_percent / float(exchange.get_price()), 0.001), 3))
-
+def enter_trade(exchange, decision, account_size, risk_percent):
+    size = str(round(max(account_size * risk_percent / float(exchange.get_price()), 
+                         0.001), 3))
     exchange.market_order("linear", "BTCUSDT", decision, "Market", size)
 
     return float_to_str(exchange.get_position()[2])
@@ -173,16 +169,21 @@ def enter_trade(exchange, decision, account_size):
 
 def validate_env_2_boogaloo():
     """
+    You should have seen validate_env_1.... this information doesnt help the users
     """
     while True:
         try:
+            # Test that we can connect to the exchange before doing anything else
+            Exchange(testnet=True).test_connection()
+
             # We have to pass in the user provided variables as the env 
             # Testnet is hard set to true here for une ai competition
             e = Exchange(os.getenv("API_KEY"), os.getenv("API_SECRET"), True)
-            # the sneakiest lambda you'll ever see. We have to do this here as 
-            # we want to pass the exchange object to automate and can't do it 
-            # when we defined our command map. alt could just create new exchange?
-            command_map["answers"]["a"] = lambda: automate(e)
+
+            # Defining this here instead of earlier because the exchange 
+            # object didn't exist prior, better design would fix this 
+            command_map["answers"]["a"] = lambda: automate(e) # A sneaky lambda
+            
             e.get_position()
             return e
 
@@ -204,22 +205,34 @@ def validate_env_2_boogaloo():
                 file.writelines(str_to_write)
             
             load_dotenv(override = True)
+            os.system('cls||clear')
 
 
 def change_strategy():
+    """
+    Updates the log file with the newly selected strategy
+    """
     logger.update_strategy_log(get_choice(risk_map))
+    return "change"
+    
 
     
 def exit_automation(exit_event):
+    """
+    Listens for user input to specifically exit automation mode, check 'automate'
+    """
     while True:
         user = input()
         if user.lower() == '':
             exit_event.set()
-            print("\nLeaving Automation mode...")
+            # os.system('cls||clear')
+            
+            print(f"\n{'-'*55}\nLeaving Automation mode...\n{'-'*55}\n")
             break
 
+
 # TODO - Would rather have some kind of observer pattern watching the market updating
-# instead of using sleep, but ducktape and bandaids for now.
+# instead of using sleep, or maybe some kind of thread, but ducktape and bandaids for now.
 def automate(exchange):
     strat_map = {"1": 60, "5": 300, "15": 900, "H": 3600, "4": 14400, "D": 86400}
 
@@ -230,39 +243,48 @@ def automate(exchange):
     key_thread.start()
 
     while True:
-        # if exit_event.is_set():
-        #     break
+        # TODO - just call logger and get strategy to pass to the risk map slicing 
+        # the first char to automate the time this shortcut for now is fine though
+        risk = update_trade(exchange)
 
-        risk = logger.read_log_file()[0].split(" ")[0] 
-        # reads risk from log file, default to low or "D"
-        nn, data = build_strategy(risk)
-        # Make a prediction on the latest data
-        decision = nn.predict(data.get_latest_values())
-        # Runs the decision process and logs the output
-        take_action(decision, exchange)
+        # ChHANGE THIS BACK WHEN TESTING IS OVER
+        time_remaining = strat_map[risk[0]]
         
-        time_remaining = 11 #strat_map[risk]
-        
-        start = time.time()
-        print("Hit 'enter' at any point to exit automation mode")
+        print("\nTo exit automation mode hit the 'ENTER' key\n")
         while time_remaining > 0:
             if exit_event.is_set():
-                return       
 
-            if time.time() - start > 1:
-                time_remaining -= 1  
-                start = time.time()
-
-            print(f"Time before next decision: {time_remaining} seconds", end="\r")
-            time.sleep(0.1)
+                return
             
-            # print("\033[A       \033[A")
+            if risk == "D":
+                print("Warning: Daily strategy is enabled. Change strategy to high"+
+                " risk to see the program execute trades automatically every 60 seconds.\n")
+
+            print(f" Time before next decsision: {time_remaining:05d}", end="\r")
+            time_remaining -= 1
+            time.sleep(1)
         os.system("cls||clear")
     
 
 def exit_program():
     print("Check in later to see how the market is doing, see ya")
     exit(0)
+
+
+def update_trade(exchange):
+    
+    risk = logger.read_log_file()[0] 
+
+    # reads risk from log file, default to low or "D"
+    nn, data, risk_percent = build_strategy(risk)
+
+    # Make a prediction on the latest data
+    decision = nn.predict(data.get_latest_values())
+             
+    # Runs the decision process and logs the output
+    take_action(decision, exchange, risk_percent)
+    # This is lazy and shortcutty
+    return risk
 
 
 def main():
@@ -278,23 +300,27 @@ def main():
     else:
 
         exchange = validate_env_2_boogaloo()
-
-        os.system('cls||clear')
+        update_trade(exchange) 
+        # os.system('cls||clear')
 
         while True:
-            risk = logger.read_log_file()[0] 
-
-            # reads risk from log file, default to low or "D"
-            nn, data = build_strategy(risk)
-
-            # Make a prediction on the latest data
-            decision = nn.predict(data.get_latest_values())
-             
-            # Runs the decision process and logs the output
-            take_action(decision, exchange)
-
-            # Asks user whats next
-            get_choice(command_map, True)
+            # risk = logger.read_log_file()[0] 
+            #
+            # # reads risk from log file, default to low or "D"
+            # nn, data, risk_percent = build_strategy(risk)
+            #
+            # # Make a prediction on the latest data
+            # decision = nn.predict(data.get_latest_values())
+            #
+            # # Runs the decision process and logs the output
+            # take_action(decision, exchange, risk_percent)
+            #
+            # # Asks user whats next
+            # get_choice(command_map, True)
+            choice = get_choice(command_map, True)
+            
+            if choice == "change":
+                update_trade(exchange)
 
 
 if __name__ == "__main__":
@@ -323,4 +349,4 @@ if __name__ == "__main__":
                                "e": exit_program}}
 
     main()
-    
+

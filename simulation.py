@@ -5,7 +5,7 @@ from time import sleep
 
 def run_simulation(strategy):
     # Neural network
-    nn, data = strategy 
+    nn, data, _ = strategy 
 
     SIMULATIONS = 1000
     sim_data =  data.simulation_data(SIMULATIONS) 
@@ -73,7 +73,8 @@ def run_simulation(strategy):
         ACCT_LOW = ACCT_SIZE if ACCT_SIZE < ACCT_LOW else ACCT_LOW
         sleep(0.05)
 
-    print(f"\nAccount reach a high of: {ACCT_MAX} and a low of: {ACCT_LOW}")
-
+    print(f"\nAccount reach a high of: {ACCT_MAX} and a low of: {ACCT_LOW}\n")
+    print("Please note this is only a simulation to show a working product\n"+
+          "Results shown here should not be taken seriously.\n")
 if __name__ == "__main__":
     run_simulation(build_strategy("1")) 
