@@ -313,7 +313,10 @@ def exit_program():
 
 
 def update_trade(exchange):
-    
+    if exchange.get_position()[0] == "":
+        print("You are currently not in any trade, try change strategy to enter a new trade\n")
+        return 
+
     risk = logger.read_log_file()[0] 
 
     # reads risk from log file, default to low or "D"
