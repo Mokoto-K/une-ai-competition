@@ -37,9 +37,12 @@ def build_strategy(risk: str = "D"):
     # Train him
     nn.train(2000)
 
-    # TODO - Find a better way to define risk amount, like a map maybe
-    risk_percentage: float = 0.03 if risk == "D" else 0.05
-    return nn, data, risk_percentage
+    return nn, data
+
+
+# Another fantastic bandaid being applied!!!
+def risk_amount(risk):
+    return 0.01 if risk == "D" else 0.02
 
     
 if __name__ == "__main__":

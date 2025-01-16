@@ -1,8 +1,8 @@
 Current Strategy: 1 - High risk
 Current Position: Long
-Open_price: $93,322.70
-Current PNL: $-4.44
-Last trade PNL: $-5.42 (-0.72%)
-Total PNL: $-255.75 (-0.75%)
-Account Bal: $33,744.25
-Starting Bal: $34,000.00
+Open_price: $39,106.70
+Current PNL: $-3.21
+Last trade PNL: $-1.50 (-3.85%)
+Total PNL: $-29,476.37 (-73.69%)
+Account Bal: $10,523.63
+Starting Bal: $40,000.00

@@ -113,27 +113,32 @@ class Exchange:
         
         result = self._make_request("GET", "/v5/position/list", params)
          
-        # print returned result to get all information about position
-        returned_result = result.json()["result"]["list"][0]#["side"]
-
-        direction = returned_result["side"]
-        size = returned_result["size"]
-        price = returned_result["avgPrice"]
-        query_status = result.json()["retMsg"]
-
+        # TODO - Look into strange bug that crops up every now and then revolving 
+        # around bybit timing out, for now a simple try except till further investigation
+        try:
+            returned_result = result.json()["result"]["list"][0]#["side"]
+            direction = returned_result["side"]
+            size = returned_result["size"]
+            price = returned_result["avgPrice"]
+            query_status = result.json()["retMsg"]
+        except KeyError:
+            print("Trouble retrieving your current position from the exchange, Try again shortly")
+            exit(0)
+            #return 
+            
         return direction, size, price, query_status
 
 
     def get_balance(self, account_type: str = "UNIFIED", coin: str = "USDT"):
         """
-        Get user balance 
+        Get user balance
         """
         params = f"accountType={account_type}&coin={coin}"
 
         result = self._make_request("GET", "/v5/account/wallet-balance", params)
 
-        returned_result = result.json()["result"]["list"][0]["totalWalletBalance"]
-
+        returned_result = result.json()["result"]["list"][0]["coin"][0]["walletBalance"]#["totalWalletBalance"]
+        #print(returned_result) 
         return returned_result 
 
 

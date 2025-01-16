@@ -1,7 +1,8 @@
+# TODO - add another log file and process that keeps track of all trades 
 # TODO - I dont know if this should be a class or just a method... i dunno, ponder
 # on it once everything is built and running
 def write_log_file(strategy: str = "D - Low Risk", direction: str = "None", 
-                   price: str = "None", c_pnl = "None", last_pnl: str = "None", 
+                   open_price: str = "None", c_pnl = "None", last_pnl: str = "None", 
                    total_pnl: str = "None", acct_size = "None", start_bal: str = "None"):
     
     
@@ -11,7 +12,7 @@ def write_log_file(strategy: str = "D - Low Risk", direction: str = "None",
     #         f"Starting Bal: {start_bal}")
     
     log = (f"Current Strategy: {strategy}\nCurrent Position: {direction}\n"
-            f"Open_price: {price}\nCurrent PNL: {c_pnl}\n"
+            f"Open_price: {open_price}\nCurrent PNL: {c_pnl}\n"
             f"Last trade PNL: {last_pnl}\nTotal PNL: {total_pnl}\n"
             f"Account Bal: {acct_size}\nStarting Bal: {start_bal}")
 
@@ -40,16 +41,15 @@ def print_log():
     #         f"Starting Bal: {vars[6]}")
 
     log = (f"Current Strategy: {vars[0]}\nCurrent Position: {vars[1]}\n"
-           f"Open Price: {vars[2]}\nCurrent PNL: {vars[3]}\n"
-           f"Last trade PNL: {vars[4]}\nTotal PNL: {vars[5]}\n"
+           f"Open Price: {vars[2]}\nCurrent PNL: {vars[3]}\n\n"
+           f"Last trade PNL: {vars[4]}\n\nTotal PNL: {vars[5]}\n"
         f"Account Bal: {vars[6]}\nStarting Bal: {vars[7]}\n")
             # f"Starting Bal: {vars[6]}")
     
     print(f"{'-'*55}\n{log}\n{'-'*55}\n")
 
 
-# Painfully obvious this needs to be class, but im strapped for time... bandaids
-# for the moment, big fixes coming!!!
+# Painfully obvious this needs to be class, bandaids for the moment, big fixes coming!!!
 def update_strategy_log(strategy):
     log = read_log_file()
     write_log_file(strategy, log[1], log[2], log[3], log[4], log[5], log[6], log[7])

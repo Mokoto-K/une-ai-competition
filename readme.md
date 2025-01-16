@@ -1,5 +1,4 @@
 # Readme
-repo for une ai competition
 
 ## Welcome to the Casino my friend
 
@@ -12,8 +11,8 @@ The idea for this project is to take in multiple datastreams for 100's of assest
 do some math on their raw data and calculate the risk it should take in the market.
 That's the theory... this idea would take quite some time to build, so in practice...
 
-Currently this project takes real time data from only the bitcoin asset and makes
-simple calculations on its raw data to determine if it should buy or sell depending 
+Currently this project takes real time data from only the bitcoin asset and uses
+a neural network on some engineered features to determine if it should buy or sell depending 
 on the current position of the users account (bybit) and the output it calculates.
 
 To get this project from where it is to it's final form will be a project to completely 
@@ -23,12 +22,14 @@ features is ready to be used.
 When I started this project, the idea was so simple in my head... I started writting
 the first few modules, the database, the neural net, the features... then the scope
 creep kicked in and all of a sudden it turned into some kind of monster I lost control
-of towards the end just get all the basic functionality in. I hope to remedy the
+of in an attempt to just get all the basic functionality in. I hope to remedy the
 poor choice of design you may see scatter throughout the project. This project taught
 me more about what not to do instead of what to do, learning is learning I guess.
 
 UPDATE: Feels less monster like 4 days later, still structual problems that can be 
 fixed with a little more time and refactoring
+
+UPDATE: Feels like the greatest leviathan to ever exist 2 days later...
 
 ### How it does what it does
 
@@ -45,9 +46,9 @@ This database file is then used to create a set of features for the neural net t
 train on. Once trained the program then executes a prediction on the current market 
 data and returns either a buy or sell event. Depending on if the event agrees or 
 disagrees with what the users account is currently doing, it will then either 
-1. do nothing (agrees)
-2. closes trade and opens another on the opposide side of the market(disagrees)
-3. or opens a trade as there is currently no trade active.
+1. Do nothing (agrees)
+2. Closes trade and opens another on the opposide side of the market(disagrees)
+3. Or opens a trade as there is currently no trade active.
 
 All of this is controlled by the program and the neural net, the user doesn't have to 
 do anything. The user can choose to change which ever strategy is being used to trade
@@ -55,17 +56,18 @@ though, currently only high and low risk straties exist. Each has subtle differe
 Low risk looks at the daily time frame and can really only make one trade a day, it 
 also uses a smaller percentage of the users account per trade. High risk looks at 
 the 1minute time frame... yes thats right, in glorious conditions it could technically
-execute 1440 trades a day... at a higher percentage of the users account.
+execute 1440 trades a day... at a higher percentage of the users account. In the future
+I would probably have the NN control which strategy it's using depending on the volitility
+and past performance of the market.
 
-Currently the program isnt configured for automation of trading in the sense that 
-you start running the program and walk away for month to come back to a new yatch..
-This is due to the user needing to keep their computer on and running constantly, or 
-hosting it on a private webserver. Both options are not hard to setup but for the 
-scope of the une ai competition I felt it wasn't needed as no judge will sit there 
-for days watching 1 trade get executed.... that's what the simulation mode is for, it 
-simulates what the program looks autmated... roughly. I will implement automation 
-evetually, it remains to be seen if its before the 20th of January, there are more 
-important features and problems to implement and fix first.<br> UPDATE - Automation is in.
+UPDATE: AUTOMATION IS NOW ACTIVE<br>
+You can also select to turn on automation, this will have the NN update the database,
+retrain and make a new prediction for each time period that passes that matches the 
+current strategy... I know, sounds confusing, but it's simple. If you current have high
+risk strategy selected, then that corresponds to make a decision each minute, meaning 
+the NN will also retrain and make a decision each minute, this is true for any other 
+time frame. As of writting this only low and high risk with time frames of 1 day and 1 minute
+exist. To exit automation mode all you have to do is hit the enter key. 
 
 That's it, the project is far from perfect, there are alot of problems to fix, modules 
 to refactor and features to add. Feedback is very welcome, i'm new to developing programs, 
@@ -81,10 +83,25 @@ https://github.com/Mokoto-K/une-ai-competition.git une-ai-competition-winning-en
 - After the repo is cloned successfully type: python main.py or python3 main.py if you
 have any trouble running the python command, visit python.org for more information 
 on how to update your python distribution on your selected system.
-- To run the real account function (which is actually running on testnet) you will have to enter the:<br>
-api key =  <br>
-secret =    <br>
+- Next you'll want to set up a virtual environment for python, you can do this in the terminal 
+by typing:<br> python -m venv .venv <br>
+you may need to use python3 instead of python. 
+- To activate the environment you then to run <br>
+Linux/Mac: source .venv/bin/activate <br>
+Windows(depends on your shell):   .\\.venv\Scripts\activate.bat <br>
+Apparently this doesn't work for vscoders....
+- Now just run python main.py or python3 main.py
+- To run the real account function (which is running on testnet) you will have to enter an api key and secret the first time when are prompted, below I have provided one for the purpose of the competition:<br>
+api key = ZJvzXJ4WEpphUlVTiw<br>
+secret = NuvY5NftCiBlZuoWPmi7ozyxI2I8lugrY4vx<br>
 Don't worry it's just a test account for the competition, these keys arn't important.
+There is one risk with sharing an api for this contest and that is the program will 
+probably exhibit some weird behaviour if multiple people start running it with the 
+same key. There is no fix for this as multiple people should not have your api key 
+and secret. This is a known risk that is necessary for the contest and the contest only<br>
+If you wish to make your own test account you can do so here: <br>
+https://testnet.bybit.com/en/ <br>
+Just remember to request currency to fund your account before trying to use the account with this program.
 - Welcome to losing your retirement... house... family, everything really<br>
 You'll have nothing, and you'll be happy.
 
@@ -106,31 +123,13 @@ just this one asset and this one exchange for the project.
 ### Known problems
 
 - The entire project, it's one giant problem that weighs me down at night...
-- Problems displaying correct profit and loss due to self calculations of market
-data instead of replying on the exchange for all information (fixes needed in exchange
-and main) UPDATE: Partial fixes have been implemented, still not 100% accurate due
-to small fees and slippage, probably only exists for last pnl and no longer for total
-pnl, which was the more critical issue.
-- Display problems when entering a position after closing a previous one, this is 
-due to not swinging the position to the other side of the market like the nn wants 
-us to do, but instead just closing the current position. Easy fixes for this include
-doubling size when closing to flip position or creating a third state of not buy or sell
-but neutral. Both come with their advantages and problems.
-- Display issues when changing strategy, if the change causes a market flip, all displays
-connecting to position directions will display the inverse, fixes include a better flow
-of logging, or a more succint way of calculating variables for each trade. UPDATE: 
-switched out modular print statement for hardcoded one for time being.
-- Simulation is kind of a nightmare to view unless you pipe the output to a file to 
-read, auto creating a log file for it is probably the better solution for now.
-- A myriad of exchange errors if credentials are wrong or if there is an internet 
-issue. These issues are very bad and critial to the program running but not unless
-I do extensive testing over weeks to try and catch every possible issue with the 
-exchange, will it be bullet proof. Can only fix them as they come up at the moment.
--:wq
-
-
-I will get around to fixing all of these when I have the time to refactor large chunks
-of the project as more hot fixes are causing more problems to stack up
+- There is a security mechanism on bybits end which stops market orders for executing
+against resting orders if it would cause too much slippage in the order book. This 
+sometimes has the effect of not fully closing a position when the NN desires too. 
+We have no control over this and you can't force an order through, this is a protection
+on bybits end. So sometimes a full position wont get closed and will close the next 
+time the NN sends the order. With how the program is currently set up, I do not 
+have the means to protect from this.
 
 ### Extra Information
 I'll add more to this as I think of things
@@ -268,3 +267,14 @@ i've used to bring that together. Iwill refactor this project, but I dont have t
 time to do it before the dealine. Anyway, today was more refinement and trying to 
 fix small bugs that pop up everywhere. Probably finished at this point, perhaps just
 some small decisions, we will see what tomorrow brings, hopefully the end to this.:w
+
+#### 16th of January, 2025
+Each time I try to slim down main.... it expands!! It's not entirely my fault though,
+what started as splitting up functionality of bigger functions turned into bug finding.
+Bybit is under traffic today, probably due to the trump inaguration coming up and 
+markets in general experiencing heavy traffic. Anyway, this caused a whole slue of 
+new bugs not seen before. I simultansously decided to adfd acouple of new features 
+like force closing orders. I digress.... I think im done for the main branch of this 
+project and now i will pivot to working on fixes in main on a different branch. If 
+im able to rework it before the deadline, i can ship it, else I just keep the Project
+where it is at!
