@@ -36,6 +36,12 @@ def str_to_float(num: str) -> float:
     Params:
     num - a number represented as a string e.g "$xx,xxx.xx"
     """
+    # Fuses the two converters together, currently breaks alot of things, pause for now
+    # if num[0] == "$":
+    #     return float(num.replace("," ,"").strip("$").strip())
+    # else:
+    #     return f"${float(num):,.2f}"
+    
     return float(num.replace("," ,"").strip("$").strip())
 
 
@@ -53,7 +59,7 @@ def trade_math(open: float, close: float):
     """
     Calculates the int and percent difference between two numbers
     """
-    # Sometimes bybit will return o values when it should, due to server overload
+    # Sometimes bybit will return no values when it should, due to server overload
     # working on bigger fix, for now, we just catch ZeroDivisionError and retrun 0
     try:
         difference = close - open
@@ -63,21 +69,20 @@ def trade_math(open: float, close: float):
     return difference, percent_difference
 
 
-def take_action(decision, exchange) -> None:
+def take_action(decision) -> None:
     """
     What doesn't this function do.... and that's a problem
     """
-    bybit = exchange
     
     # Translate the nn decision to a market action & command
     decision = "Buy" if decision > 0.5 else "Sell"
     direction = "Long" if decision == "Buy" else "Short"
 
     # Finds out if we are in a position or not. 
-    side, size, entry_price, _ = bybit.get_position(symbol="BTCUSDT") 
+    side, size, entry_price, _ = exchange.get_position(symbol="BTCUSDT") 
 
     # Check for zero balance / get the accounts current balance
-    account_bal = get_account_balance(exchange)
+    account_bal = get_account_balance()
 
     # Control for starting bal to be initiated and never changed
     if logger.read_log_file()[7] == "None":
@@ -92,16 +97,16 @@ def take_action(decision, exchange) -> None:
     if side != "":
         if side == decision:
             print(f"We are in a {direction} and will remain {direction}")
-            cpnl = float_to_str(get_current_pnl(exchange))
+            cpnl = float_to_str(get_current_pnl())
             entry_price = float_to_str(entry_price) 
 
         else:
             print(f"We are closing our {logger.read_log_file()[1]} position")
-            direction, entry_price, account_bal, lpnl = exit_trade(exchange, decision)
+            direction, entry_price, account_bal, lpnl = exit_trade(decision)
             
     else:
         print(f"Not in any position, Entering a {direction}\n")
-        entry_price = enter_trade(bybit, decision)
+        entry_price = enter_trade(decision)
         
     # Calcs for total pnl for account
     dpnl, ppnl = trade_math(starting_bal, account_bal)
@@ -113,7 +118,7 @@ def take_action(decision, exchange) -> None:
     logger.print_log()
 
     
-def get_account_balance(exchange):
+def get_account_balance():
     account_bal = exchange.get_balance()
     if account_bal != "0":
         return str_to_float(account_bal)
@@ -123,7 +128,7 @@ def get_account_balance(exchange):
 
     
 # uncomrfotable with how this is written
-def get_current_pnl(exchange):
+def get_current_pnl():
     """
     Calculates the difference between two values... similiar to trade_math..?
     """
@@ -132,7 +137,9 @@ def get_current_pnl(exchange):
 
     return current * size - entry * size
 
-def get_position(exchange):
+
+# This should be more universal instead of serving only one purpose
+def get_position():
     in_position = exchange.get_position()[0]
     if in_position == "":
         return False
@@ -144,7 +151,7 @@ def get_position(exchange):
 
 
 # TODO - Thin this function out. If forced close is on, decision = None by default
-def exit_trade(exchange, decision = None, forced = False):
+def exit_trade(decision = None, forced = False):
     """
     Closes an open position and enters a new trade in the opposite direction
     """
@@ -170,17 +177,17 @@ def exit_trade(exchange, decision = None, forced = False):
     # Close position
     exchange.market_order("linear", "BTCUSDT", decision, "Market", size)
 
-    account_bal = get_account_balance(exchange) + dollar_difference
+    account_bal = get_account_balance() + dollar_difference
    
     # Deals with mostly bybit overload problems and protection against user trying to 
     # force close a trade that doesnt exist
-    if get_position(exchange):
+    if get_position():
         direction = "Long" if side == "Buy" else "Short"
-        return direction, open_price, account_bal, lpnl
+        return direction, float_to_str(open_price), account_bal, lpnl
     else: 
         # Add the dollar amount difference to the... wait do i need to do this. 
         direction = "Long" if decision == "Buy" else "Short"
-        entry_price = "None" if forced else enter_trade(exchange, decision)
+        entry_price = "None" if forced else enter_trade(decision)
         if not forced:
             print(f"Opening a {direction}")
         else:
@@ -190,9 +197,9 @@ def exit_trade(exchange, decision = None, forced = False):
 
 
 # I can remove risk_percent as a param and account_size
-def enter_trade(exchange, decision):
+def enter_trade(decision):
     risk_percent = risk_amount(logger.read_log_file()[0][0])
-    account_size = get_account_balance(exchange)
+    account_size = get_account_balance()
 
     # TODO - Turn this into a function, maybe, if i do it again somewhere else
     size = str(round(max(account_size * risk_percent / float(exchange.get_price()), 
@@ -203,52 +210,6 @@ def enter_trade(exchange, decision):
     return float_to_str(exchange.get_position()[2])
     
 
-def validate_env_2_boogaloo():
-    """
-    You should have seen validate_env_1.... this information doesnt help the users
-    """
-    while True:
-        try:
-            # Test that we can connect to the exchange before doing anything else
-            Exchange(testnet=True).test_connection()
-
-            # We have to pass in the user provided variables as the env 
-            # Testnet is hard set to true here for une ai competition
-            e = Exchange(os.getenv("API_KEY"), os.getenv("API_SECRET"), True)
-
-            # Defining this here instead of earlier because the exchange 
-            # object didn't exist prior, better design would fix this 
-            command_map["answers"]["a"] = lambda: automate(e) # A sneaky lambda
-            command_map["answers"]["r"] = lambda: refresh_trade(e) 
-
-            # Currently turning off till i can solve the bybit execution problem
-            # i.e they don't let your trade through if there isnt enough liquiidty
-            command_map["answers"]["f"] = lambda: exit_trade(e, forced=True) 
-
-            e.get_position()
-            return e
-
-            # TODO - Handle error correctly, big black hole for a user here
-        except Exception: 
-            if os.path.exists("./.env"):
-                print("Error reading the api key and secret\n")
-
-            with open(".env", "w") as file:
-                api_key: str = input("Please enter your api key:\n")
-                api_secret: str = input("Please enter you api secret:\n")
-
-                print(f"{'-'*55}\nCREATING AUTHENTICATION LINK\n{'-'*55}")
-                
-                # TODO - Storing api keys as unprotected strings in a txt file i 
-                # see... very good. we should just roll our own encryption to 
-                # protect them while we are at it.
-                str_to_write: str = f"API_KEY={api_key}\nAPI_SECRET={api_secret}"
-                file.writelines(str_to_write)
-            
-            load_dotenv(override = True)
-            os.system('cls||clear')
-
-
 def change_strategy():
     """
     Updates the log file with the newly selected strategy
@@ -256,7 +217,6 @@ def change_strategy():
     logger.update_strategy_log(get_choice(risk_map))
     return "change"
     
-
     
 def exit_automation(exit_event):
     """
@@ -274,7 +234,7 @@ def exit_automation(exit_event):
 
 # TODO - Would rather have some kind of observer pattern watching the market updating
 # instead of using sleep, or maybe some kind of thread, but ducktape and bandaids for now.
-def automate(exchange):
+def automate():
     strat_map = {"1": 60, "5": 300, "15": 900, "H": 3600, "4": 14400, "D": 86400}
 
     # Set up our thread to cancel automation mode
@@ -286,7 +246,7 @@ def automate(exchange):
     while True:
         # TODO - just call logger and get strategy to pass to the risk map slicing 
         # the first char to automate the time this shortcut for now is fine though
-        risk = update_trade(exchange)
+        risk = update_trade()
 
         # ChHANGE THIS BACK WHEN TESTING IS OVER
         time_remaining = strat_map[risk[0]]
@@ -312,7 +272,7 @@ def exit_program():
     exit(0)
 
 
-def update_trade(exchange):
+def update_trade():
     
     risk = logger.read_log_file()[0] 
 
@@ -323,16 +283,52 @@ def update_trade(exchange):
     decision = nn.predict(data.get_latest_values())
              
     # Runs the decision process and logs the output
-    take_action(decision, exchange)
+    take_action(decision)
     # This is lazy and shortcutty
     return risk
 
 
-def refresh_trade(exchange):
+def refresh_trade():
     # Recreates the NNs decision (which needs to be a float) by reading the log file
     # main is turning into a disater, a slow carcrash that i have the power to stop!
     decision = 0.51 if logger.read_log_file()[1] == "Long" else 0.49
-    take_action(decision, exchange)
+    take_action(decision)
+
+
+def validate_env_2_boogaloo():
+    """
+    
+    """
+    while True:
+        try:
+            # Test that we can connect to the exchange before doing anything else
+            Exchange(testnet=True).test_connection()
+            # Once we know we can connect to the exchange, auth our connection 
+            exchange.authenticate_connection(os.getenv("API_KEY"), os.getenv("API_SECRET"))
+
+            # Why am i doing this again?
+            exchange.get_position()
+            
+
+            # TODO - Handle error correctly, big black hole for a user here
+        except Exception: 
+            if os.path.exists("./.env"):
+                print("Error reading the api key and secret\n")
+
+            with open(".env", "w") as file:
+                api_key: str = input("Please enter your api key:\n")
+                api_secret: str = input("Please enter you api secret:\n")
+
+                print(f"{'-'*55}\nCREATING AUTHENTICATION LINK\n{'-'*55}")
+                
+                # TODO - Storing api keys as unprotected strings in a txt file i 
+                # see... very good. we should just roll our own encryption to 
+                # protect them while we are at it.
+                str_to_write: str = f"API_KEY={api_key}\nAPI_SECRET={api_secret}"
+                file.writelines(str_to_write)
+            
+            load_dotenv(override = True)
+            os.system('cls||clear')
 
 
 def main():
@@ -347,23 +343,26 @@ def main():
         run_simulation(build_strategy(risk))
     else:
 
-        exchange = validate_env_2_boogaloo()
-        update_trade(exchange) 
+        validate_env_2_boogaloo()
+        update_trade() 
 
         while True:
             choice = get_choice(command_map, True)
             
             if choice == "change":
-                update_trade(exchange)
+                update_trade()
 
 
 if __name__ == "__main__":
+    # Load the environment variables
     load_dotenv()
-    # Creating the log file before anything else to avoid critial destruction
-    # .... also it probably shouldn't be a txt file....
+    # Create an instance of the exchange 
+    exchange = Exchange(testnet = True)
+    
+    # Create a user log file if one does not exist
     if not os.path.exists("./user_log.txt"):
         logger.write_log_file()
-
+    
     task_map = {"question" : "Please select a task: \n" +
         "Press 's' to run a simulation on the market \n" + 
         "Press 'r' to run a real trade in the market \n\n" + ">> ",
@@ -374,7 +373,6 @@ if __name__ == "__main__":
         "Press 'l' for low risk\n\n" + ">> ", 
                 "answers": {"h": "1 - High risk", "l": "D - Low risk"}}
 
-
     command_map = {"question": "What would you like to do?\n" + 
         "Press r to Refresh Current or Enter a trade\n" + 
         "Press c to Change strategy\n" + 
@@ -382,6 +380,9 @@ if __name__ == "__main__":
         "Press f to Force close the current trade\n" + 
         "Press e to Exit\n\n" + ">> ",
                    "answers": {"c": change_strategy, 
+                               "r": lambda: update_trade,
+                               "f": lambda: exit_trade(exchange, forced = True),
+                               "a": lambda: automate,
                                "e": exit_program}}
 
     main()
