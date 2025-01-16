@@ -334,6 +334,10 @@ def update_trade(exchange):
 def refresh_trade(exchange):
     # Recreates the NNs decision (which needs to be a float) by reading the log file
     # main is turning into a disater, a slow carcrash that i have the power to stop!
+    if exchange.get_position()[0] == "":
+        print("You are currently not in any trade, try change strategy to enter a new trade\n")
+        return
+        
     decision = 0.51 if logger.read_log_file()[1] == "Long" else 0.49
     take_action(decision, exchange)
 
