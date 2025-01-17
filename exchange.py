@@ -36,7 +36,7 @@ class Exchange:
             requests.get(self.base_url+"/v5/market/time")
             return 1
         except Exception:
-            print("Could not connect to bybit's servers, try again later")
+            print("Could not connect to bybit's servers, try again later or check your internet connection")
             exit(0)
 
 
@@ -121,13 +121,12 @@ class Exchange:
             size = returned_result["size"]
             price = returned_result["avgPrice"]
             query_status = result.json()["retMsg"]
+            return direction, size, price, query_status
         except KeyError:
             print("Trouble retrieving your current position from the exchange, Try again shortly")
             exit(0)
             #return 
             
-        return direction, size, price, query_status
-
 
     def get_balance(self, account_type: str = "UNIFIED", coin: str = "USDT"):
         """
@@ -136,10 +135,14 @@ class Exchange:
         params = f"accountType={account_type}&coin={coin}"
 
         result = self._make_request("GET", "/v5/account/wallet-balance", params)
-
-        returned_result = result.json()["result"]["list"][0]["coin"][0]["walletBalance"]#["totalWalletBalance"]
-        #print(returned_result) 
-        return returned_result 
+        
+        try:
+            returned_result = result.json()["result"]["list"][0]["coin"][0]["walletBalance"]#["totalWalletBalance"]
+            return returned_result 
+            #print(returned_result) 
+        except Exception:
+            print("\nUnable to retrieve wallet balance at the moment\n")
+            return "1"
 
 
     def get_price(self, category: str = "linear", symbol: str = "BTCUSDT"):
@@ -148,13 +151,14 @@ class Exchange:
         """
         
         params = f"category={category}&symbol={symbol}"
-
-        result = self._make_request("GET", "/v5/market/tickers", params)
-
-        returned_result = result.json()["result"]["list"][0]["lastPrice"]
-
-        return returned_result
-
+        try:
+            result = self._make_request("GET", "/v5/market/tickers", params)
+            returned_result = result.json()["result"]["list"][0]["lastPrice"]
+            return returned_result
+        except Exception:
+            print("Unable to contact bybit at the moment returning price of 1 \n"+
+                "Check get_price in exchange class")
+            return "1"
 
     def create_limit_order(self, category, symbol, side, order_type, qty, price, time_in_force="PostOnly"):
         params = json.dumps({
@@ -172,19 +176,40 @@ class Exchange:
         return response.json()
 
 
-    def market_order(self, category, symbol, side, order_type, qty) -> str: 
+    def market_order(self, side, size, category = "linear", symbol = "BTCUSDT") -> str: 
+        """
+        side, size, category i.e linear, symbol
+        """
         params = json.dumps({
                             "category": category,
                             "symbol": symbol,
                             "side": side,
-                            "orderType": order_type,
-                            "qty": qty,
+                            "orderType": "Market",
+                            "qty": size,
         })
 
         response = self._make_request("POST", "/v5/order/create", params)
         # print(response.json())
         # Return the response mostly for testing
         return response.json()
+
+
+    def get_last_pnl(self, category = "linear", symbol = "BTCUSDT", limit = 1):
+
+        params = f"category={category}&symbol={symbol}&limit={limit}"
+
+        result = self._make_request("GET", "/v5/position/closed-pnl", params)
+
+        # Wrapping as floats could cause issues
+        try:
+            returned_result = result.json()["result"]["list"][0]
+            entry = float(returned_result["avgEntryPrice"])
+            exit = float(returned_result["avgExitPrice"])
+            size = float(returned_result["qty"])
+            return entry, exit, size
+        except Exception:
+            return 0, 0, 0
+        
 
 
     def cancel_all(self, category = "linear", symbol = "BTCUSDT"):

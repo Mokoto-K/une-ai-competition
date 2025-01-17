@@ -5,7 +5,7 @@ from time import sleep
 
 def run_simulation(strategy):
     # Neural network
-    nn, data, _ = strategy 
+    nn, data = strategy 
 
     SIMULATIONS = 1000
     sim_data =  data.simulation_data(SIMULATIONS) 

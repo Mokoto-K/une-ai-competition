@@ -1,11 +1,11 @@
 # Readme
 
-## Welcome to the Casino my friend
+# Welcome to the Casino my friend
 
 This is a repo for my attempt at the une ai competition that was held from Dec 2024 -
 Jan 2025.
 
-### What it does
+## What it does
 
 The idea for this project is to take in multiple datastreams for 100's of assests,
 do some math on their raw data and calculate the risk it should take in the market.
@@ -15,27 +15,26 @@ Currently this project takes real time data from only the bitcoin asset and uses
 a neural network on some engineered features to determine if it should buy or sell depending 
 on the current position of the users account (bybit) and the output it calculates.
 
-To get this project from where it is to it's final form will be a project to completely 
-finish at a later date. As of the 11th of January, 2025 the first version with bare minimum
-features is ready to be used.
-
 When I started this project, the idea was so simple in my head... I started writting
 the first few modules, the database, the neural net, the features... then the scope
-creep kicked in and all of a sudden it turned into some kind of monster I lost control
-of in an attempt to just get all the basic functionality in. I hope to remedy the
-poor choice of design you may see scatter throughout the project. This project taught
-me more about what not to do instead of what to do, learning is learning I guess.
+creep kicked in and all of a sudden it turned into some kind of mash of duct tape
+and rubber bands in an attempt to just get all the basic functionality in. I hope to remedy some of the
+poor design choice I choose to use along the way. This project taught
+me more about what not to do instead of what to do, but learning is learning.
+<br>
+UPDATE: Feels less like rubber bands and duct tape just 4 days later, 
+still structual problems that can be fixed with a little more time and refactoring
+<br>
+UPDATE: Feels like the greatest ball of duct taped rubber bands to ever exist 2 days later...
+<br>
+UPDATE: Refactored some core elements.... everything is under control.
+<br>
 
-UPDATE: Feels less monster like 4 days later, still structual problems that can be 
-fixed with a little more time and refactoring
+## How it does what it does
 
-UPDATE: Feels like the greatest leviathan to ever exist 2 days later...
-
-### How it does what it does
-
-Initially the user is asked to choose between running a simulation or a real trade. Assuming
-you choose to trade and you have credentials to trade i.e an api key and the secret,
-the program will read the user log file (or create one if one with default values if it doesn't exist) 
+Initially a user is asked for credentials to trade i.e an api key and the secret, if they
+have already provided one, the program will automatically read the .env file, otherwise they will have 
+to fill out the api information. The program will then read the user log file (or create one if one with default values if it doesn't exist) 
 for the strategy writtin within and send that to the database. The strategy is a timeframe that 
 the market trades on i.e 1minute, 5minute, 1hour, Day, etc. The database then either creates a 
 file for that strategy/timeframe or reads it in if it already exists. The database compares the last
@@ -58,7 +57,7 @@ also uses a smaller percentage of the users account per trade. High risk looks a
 the 1minute time frame... yes thats right, in glorious conditions it could technically
 execute 1440 trades a day... at a higher percentage of the users account. In the future
 I would probably have the NN control which strategy it's using depending on the volitility
-and past performance of the market.
+and past performance of the market. 
 
 UPDATE: AUTOMATION IS NOW ACTIVE<br>
 You can also select to turn on automation, this will have the NN update the database,
@@ -73,6 +72,10 @@ That's it, the project is far from perfect, there are alot of problems to fix, m
 to refactor and features to add. Feedback is very welcome, i'm new to developing programs, 
 using machine learning... computer science in general, the whole reason I entered this 
 competition was to see where I was at after one year of studying. Enjoy. 
+<br>
+UPDATE: Extra features like force closing a position & reviewing current position 
+are now available.
+<br>
 
 ### How to run
 
@@ -80,16 +83,14 @@ competition was to see where I was at after one year of studying. Enjoy.
 - Navigate to a directory you are happy cloning the project too
 - Type or copy & paste everything on the below line <br>
 https://github.com/Mokoto-K/une-ai-competition.git une-ai-competition-winning-entry
-- After the repo is cloned successfully type: python main.py or python3 main.py if you
-have any trouble running the python command, visit python.org for more information 
-on how to update your python distribution on your selected system.
-- Next you'll want to set up a virtual environment for python, you can do this in the terminal 
+- After the repo is cloned successfully you'll want to set up a virtual environment for python, you can do this in the terminal 
 by typing:<br> python -m venv .venv <br>
-you may need to use python3 instead of python. 
-- To activate the environment you then to run <br>
+you may need to use python3 instead of python. f you have any trouble running the python command, 
+visit python.org for more information on how to update your python distribution on your selected system.
+- To activate the environment you then need to run <br>
 Linux/Mac: source .venv/bin/activate <br>
 Windows(depends on your shell):   .\\.venv\Scripts\activate.bat <br>
-Apparently this doesn't work for vscoders....
+Apparently this doesn't work for vscode if you're into that kind of thing...
 - Now just run python main.py or python3 main.py
 - To run the real account function (which is running on testnet) you will have to enter an api key and secret the first time when are prompted, below I have provided one for the purpose of the competition:<br>
 api key = ZJvzXJ4WEpphUlVTiw<br>
@@ -102,6 +103,12 @@ and secret. This is a known risk that is necessary for the contest and the conte
 If you wish to make your own test account you can do so here: <br>
 https://testnet.bybit.com/en/ <br>
 Just remember to request currency to fund your account before trying to use the account with this program.
+<br>
+If you wish to view the account that is connected to the program you can go here and log in using these details:<br>
+https://testnet.bybit.com/trade/usdt/BTCUSDT <br>
+Email: une.ai.competition@gmail.com <br>
+Password: Uneaicompetition1<br>
+
 - Welcome to losing your retirement... house... family, everything really<br>
 You'll have nothing, and you'll be happy.
 
@@ -124,12 +131,13 @@ just this one asset and this one exchange for the project.
 
 - The entire project, it's one giant problem that weighs me down at night...
 - There is a security mechanism on bybits end which stops market orders for executing
-against resting orders if it would cause too much slippage in the order book. This 
-sometimes has the effect of not fully closing a position when the NN desires too. 
+against resting orders if it would cause too much slippage in the order book. This is due 
+to running the program on a testnet which has significantly less trading activity and
+users, this probelem does not exist in the real market.
+This problem sometimes has the effect of not fully closing a position when the NN desires too. 
 We have no control over this and you can't force an order through, this is a protection
-on bybits end. So sometimes a full position wont get closed and will close the next 
-time the NN sends the order. With how the program is currently set up, I do not 
-have the means to protect from this.
+on bybits end. So sometimes a full position wont get closed and will close the next time
+the nn makes a decision.
 
 ### Extra Information
 I'll add more to this as I think of things
@@ -278,3 +286,12 @@ like force closing orders. I digress.... I think im done for the main branch of 
 project and now i will pivot to working on fixes in main on a different branch. If 
 im able to rework it before the deadline, i can ship it, else I just keep the Project
 where it is at!
+
+#### 17th of January, 2025
+Well well well... the day finally came when I put down the refactor of a century..
+Main has been reworked and now isn't a complete dumpster fire. Minor changes elsewhere,
+mostly just catching strage edge cases that crop up. At the current moment, barring 
+any critical bugs that appear in the next two days while it runs non stop trading..
+this project is at a place where it can be judged and no new features will be going
+in until after next week. So... after 12 days, 70+ hrs (not ashamed admitting that).
+
