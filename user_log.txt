@@ -1,7 +1,7 @@
 Current Strategy: 1 - High risk
 Current Position: Buy
 Open_price: $99,173.10
-Current PNL: $-39.96
+Current PNL: $-33.35
 Last trade PNL: $-0.66 (-0.33%)
 Total PNL: $417.20 (4.17%)
 Account Bal: $10,417.20
