@@ -4,7 +4,6 @@
 # warm start it or better yet just thread it and hot start it... not sure which and
 # how.
 
-
 from neuralnetwork import NeuralNetwork
 from features import DataFeatures
 
@@ -48,7 +47,6 @@ layer_config = [
 
 ]
 
-
 best_nn = i = 0 
 epochs = 2000
 lowest_loss = 1
@@ -57,7 +55,6 @@ for layers in layer_config:
     nn = NeuralNetwork(X_train, y_train, layers = layers, learning_rate=0.1, training = True)
     
     nn.train(epochs, (X_val, y_val))
-    
     
     y_pred = nn.predict(X_val)
     

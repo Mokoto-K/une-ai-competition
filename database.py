@@ -220,7 +220,7 @@ class Database:
         
 
     def run(self):
-        print(f"{'-'*55}\n{'-'*55}")
+        print(f"{'-'*45}\n{'-'*45}")
         if self.test_connection:  
             if not os.path.exists(self.file_name):
                 self.create_DB()
@@ -229,7 +229,7 @@ class Database:
         else:
             print("Cannot connect to exchange, check your internet connect or"+  
                 " visit bybit.com to check for their currect operation status")
-        print(f"{'-'*55}\n{'-'*55}")
+        print(f"{'-'*45}\n{'-'*45}")
 
     
 if __name__ == "__main__":

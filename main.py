@@ -34,7 +34,7 @@ def in_position(inverse: bool = False):
             "execute your trade\nTry to run your command again\n")
         return False 
     else:
-        print(f"\nTrade successfully executed\n{'-'*55}")
+        print(f"\nTrade successfully executed\n{'-'*45}")
         return True 
 
 
@@ -179,7 +179,7 @@ def exit_automation(exit_event) -> None:
         user: str = input()
         if user.lower() == '':
             exit_event.set()
-            print(f"\n{'-'*55}\nLeaving Automation mode...\n{'-'*55}\n")
+            print(f"\n{'-'*45}\nLeaving Automation mode...\n{'-'*45}\n")
             break
 
 
@@ -276,7 +276,7 @@ def validate_env() -> None:
 
 def main() -> None:
     print("\nWelcome to self managing your retirement fund \n" + 
-        "(This is a literal casino)\n")
+        "(This is currently a literal casino)\n")
 
     validate_env()
     while True:

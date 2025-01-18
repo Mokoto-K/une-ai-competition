@@ -5,12 +5,6 @@ def write_log_file(strategy: str = "D - Low Risk", direction: str = "None",
                    open_price: str = "None", c_pnl = "None", last_pnl: str = "None", 
                    total_pnl: str = "None", acct_size = "None", start_bal: str = "None"):
     
-    
-    # log = (f"Current Strategy: {strategy}\nCurrent Position: {direction}\n"
-    #         f"Open_price: {price}\nAccount Balance: {acct_size}\n"
-    #         f"Last trade PNL: {last_pnl}\nTotal PNL: {total_pnl}\n"
-    #         f"Starting Bal: {start_bal}")
-    
     log = (f"Current Strategy: {strategy}\nCurrent Position: {direction}\n"
             f"Open_price: {open_price}\nCurrent PNL: {c_pnl}\n"
             f"Last trade PNL: {last_pnl}\nTotal PNL: {total_pnl}\n"
@@ -35,18 +29,14 @@ def read_log_file():
 # Needed to then print the logs..so much duplicate code to refactor
 def print_log():
     vars = read_log_file()
-    # log = (f"Current Strategy: {vars[0]}\nCurrent Position: {vars[1]}\n"
-    #         f"Open Price: {vars[2]}\nAccount Balance: {vars[3]}\n"
-    #         f"Last trade PNL: {vars[4]}\nTotal PNL: {vars[5]}\n"
-    #         f"Starting Bal: {vars[6]}")
 
     log = (f"Current Strategy: {vars[0]}\nCurrent Position: {vars[1]}\n"
-           f"Open Price: {vars[2]}\nCurrent PNL: {vars[3]}\n\n"
-           f"Last trade PNL: {vars[4]}\n\nTotal PNL: {vars[5]}\n"
+           f"Open Price: {vars[2]}\nCurrent Profit/Loss: {vars[3]}\n\n"
+           f"Last trade Profit/Loss: {vars[4]}\n\nTotal Profit/Loss: {vars[5]}\n"
         f"Account Bal: {vars[6]}\nStarting Bal: {vars[7]}\n")
             # f"Starting Bal: {vars[6]}")
     
-    print(f"{'-'*55}\n{log}\n{'-'*55}\n")
+    print(f"{'-'*45}\n{log}\n{'-'*45}\n")
 
 
 # Painfully obvious this needs to be class, bandaids for the moment, big fixes coming!!!

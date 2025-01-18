@@ -1,3 +1,4 @@
+# TODO - Build a universal retries and timeout function that all calls can use.
 # TODO - Fix all documentation when i have time
 
 import requests
@@ -36,7 +37,8 @@ class Exchange:
             requests.get(self.base_url+"/v5/market/time")
             return 1
         except Exception:
-            print("Could not connect to bybit's servers, try again later or check your internet connection")
+            print("Could not connect to bybit's servers\n"+
+                "Try again later or check your connection\n")
             exit(0)
 
 
@@ -113,19 +115,24 @@ class Exchange:
         
         result = self._make_request("GET", "/v5/position/list", params)
          
-        # TODO - Look into strange bug that crops up every now and then revolving 
-        # around bybit timing out, for now a simple try except till further investigation
-        try:
-            returned_result = result.json()["result"]["list"][0]#["side"]
-            direction = returned_result["side"]
-            size = returned_result["size"]
-            price = returned_result["avgPrice"]
-            query_status = result.json()["retMsg"]
-            return direction, size, price, query_status
-        except KeyError:
-            print("Trouble retrieving your current position from the exchange, Try again shortly")
-            exit(0)
-            #return 
+        # Occastionally the request fails to return what we want and so we crash
+        retries = 5 
+        while retries > 0:
+            try:
+                returned_result = result.json()["result"]["list"][0]#["side"]
+                direction = returned_result["side"]
+                size = returned_result["size"]
+                price = returned_result["avgPrice"]
+                query_status = result.json()["retMsg"]
+                return direction, size, price, query_status
+            except KeyError:
+                print("\nHaving trouble connecting to exchange, wait a moment...\n")
+                time.sleep(5)
+                retries -= 1
+                
+        print("Unable to retrieve current position from exchange\n"+
+            "Check your internet connection or try again shortly.\n")
+        exit(0)
             
 
     def get_balance(self, account_type: str = "UNIFIED", coin: str = "USDT"):
@@ -151,6 +158,7 @@ class Exchange:
         """
         
         params = f"category={category}&symbol={symbol}"
+
         try:
             result = self._make_request("GET", "/v5/market/tickers", params)
             returned_result = result.json()["result"]["list"][0]["lastPrice"]
@@ -210,7 +218,6 @@ class Exchange:
         except Exception:
             return 0, 0, 0
         
-
 
     def cancel_all(self, category = "linear", symbol = "BTCUSDT"):
         params = json.dumps({

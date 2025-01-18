@@ -7,7 +7,7 @@ def run_simulation(strategy):
     # Neural network
     nn, data = strategy 
 
-    SIMULATIONS = 1000
+    SIMULATIONS = 500
     sim_data =  data.simulation_data(SIMULATIONS) 
     
     # Market open and closes
@@ -71,7 +71,7 @@ def run_simulation(strategy):
 
         ACCT_MAX = ACCT_SIZE if ACCT_SIZE > ACCT_MAX else ACCT_MAX
         ACCT_LOW = ACCT_SIZE if ACCT_SIZE < ACCT_LOW else ACCT_LOW
-        sleep(0.05)
+        sleep(0.20)
 
     print(f"\nAccount reach a high of: {ACCT_MAX} and a low of: {ACCT_LOW}\n")
     print("Please note this is only a simulation to show a working product\n"+
