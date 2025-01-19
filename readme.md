@@ -77,7 +77,7 @@ UPDATE: Extra features like force closing a position & reviewing current positio
 are now available.
 <br>
 
-### How to run
+## How to run
 
 - Open up a terminal
 - Navigate to a directory you are happy cloning the project too
@@ -91,6 +91,10 @@ visit python.org for more information on how to update your python distribution 
 Linux/Mac: source .venv/bin/activate <br>
 Windows(depends on your shell):   .\\.venv\Scripts\activate.bat <br>
 Apparently this doesn't work for vscode if you're into that kind of thing...
+- Next you will need to install the requirements, you can do this with one of the following
+commands. <br>
+pip install -r requirements.txt
+pip3 install -r requirements.txt
 - Now just run python main.py or python3 main.py
 - To run the real account function (which is running on testnet) you will have to enter an api key and secret the first time when are prompted, below I have provided one for the purpose of the competition:<br>
 api key = ZJvzXJ4WEpphUlVTiw<br>
@@ -112,7 +116,7 @@ Password: Uneaicompetition1<br>
 - Welcome to losing your retirement... house... family, everything really<br>
 You'll have nothing, and you'll be happy.
 
-### Why bitcoin and why bybit
+## Why bitcoin and why bybit
 
 - Bitcoin trades 24/7 so for a competition where I have no idea when someone may run
 the program, I need it to be able to produce results. Normal markets have open and 
@@ -127,10 +131,10 @@ to build products off. These arn't commonly free things in the world of finance.
 - These are the main reasons why i've chosen to scale down my original idea and use
 just this one asset and this one exchange for the project.
 
-### Known problems
+## Known problems
 
 - The entire project, it's one giant problem that weighs me down at night...
-- There is a security mechanism on bybits end which stops market orders for executing
+- There is a market security mechanism on bybits end which stops market orders for executing
 against resting orders if it would cause too much slippage in the order book. This is due 
 to running the program on a testnet which has significantly less trading activity and
 users, this probelem does not exist in the real market.
@@ -139,7 +143,7 @@ We have no control over this and you can't force an order through, this is a pro
 on bybits end. So sometimes a full position wont get closed and will close the next time
 the nn makes a decision.
 
-### Extra Information
+## Extra Information
 I'll add more to this as I think of things
 
 - The simulation is just the ai predicting over the last x days (set to 100 at the 
@@ -157,7 +161,7 @@ the daily data stream which updates at 00:00 UTC each day.
 
 <hr>
 
-### Programming log
+## Programming log
 
 <hr>
 
@@ -295,3 +299,8 @@ any critical bugs that appear in the next two days while it runs non stop tradin
 this project is at a place where it can be judged and no new features will be going
 in until after next week. So... after 12 days, 70+ hrs (not ashamed admitting that).
 
+#### 19th of January, 2025
+A few minor display changes implemented after getting some "non tech savy" people 
+to try run the program.... we call that... r n d bby. Other than that, just slight 
+changes to the documentation and writing up the 500 word  description. I will submit
+it tomorrow in its current form.

@@ -126,7 +126,7 @@ class Exchange:
                 query_status = result.json()["retMsg"]
                 return direction, size, price, query_status
             except KeyError:
-                print("\nHaving trouble connecting to exchange, wait a moment...\n")
+                print(f"\nHaving trouble connecting to exchange, wait a moment...{retries}\n")
                 time.sleep(5)
                 retries -= 1
                 

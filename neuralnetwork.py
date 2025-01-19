@@ -213,7 +213,7 @@ class NeuralNetwork:
         """
 
         if not self.training:
-            print("Thinking of what to do...\n")
+            print("I'm thinking of what to do...\n")
 
         for epoch in range(epochs):
             y_hat = self.forward_prop()

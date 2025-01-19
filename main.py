@@ -267,7 +267,7 @@ def validate_env() -> None:
                 api_secret: str = input("Please enter you api secret:\n")
 
                 print(f"{'-'*55}\nCREATING AUTHENTICATION LINK\n{'-'*55}")
-                # TODO - protec the keys!!
+                # TODO - protec the keys!! nice plain text storage.
                 str_to_write: str = f"API_KEY={api_key}\nAPI_SECRET={api_secret}"
                 file.writelines(str_to_write)
             load_dotenv(override = True)
@@ -309,7 +309,7 @@ if __name__ == "__main__":
         "Press c to Change strategy\n" + 
         "Press a to Automate trading\n" + 
         "Press f to Force close the current trade\n" + 
-        "Press e to Exit\n\n" + ">> ",
+        "Press e to Exit\n\nHit ENTER to confirm command\n\n" + ">> ",
                    "answers": {"c": change_strategy, 
                                "s": run_sim,
                                "r": refresh_trade,

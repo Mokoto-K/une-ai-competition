@@ -12,7 +12,7 @@ def write_log_file(strategy: str = "D - Low Risk", direction: str = "None",
 
     with open("user_log.txt", "w") as file:
         file.writelines(log)
-    
+         
             
 def read_log_file():
     
