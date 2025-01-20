@@ -5,15 +5,51 @@
 This is a repo for my attempt at the une ai competition that was held from Dec 2024 -
 Jan 2025.
 
-## What it does
+## What it does 
 
 The idea for this project is to take in multiple datastreams for 100's of assests,
-do some math on their raw data and calculate the risk it should take in the market.
-That's the theory... this idea would take quite some time to build, so in practice...
+do some math on their raw data, assess current market conditions, calculate the 
+risk it should take and execute real trades using the user connected account to 
+essentially manage their assets/retriement instead of paying a super fund, investment
+firm, or any other middle man. 
 
-Currently this project takes real time data from only the bitcoin asset and uses
-a neural network on some engineered features to determine if it should buy or sell depending 
-on the current position of the users account (bybit) and the output it calculates.
+That's the theory atleast... this idea in total would take quite some time to build, 
+and the price of the data would be very expensive to buy for a competition, 
+so as a proof of concept this project
+currently takes real time data from only the bitcoin asset and uses a neural network
+on some engineered features to determine if it should buy or sell depending 
+on the current position of the users account (which is connected to a real exchange
+making trades) and the output it calculates. It then executes trades in real time,
+tracking it's own performance as it goes. 
+
+When the program starts the user is either prompted to input api information for Bybit
+(the exchange used for this project, the api key and secret used for this project 
+can be found in the readme of the git repo under the 'how to use' section, copy and 
+paste from there) or they are greeted with a choice of commands to make if they already
+have an account and api connected.
+
+Users have the choice to enter a trade or change the current risk level (strategy) that is 
+deployed in the market which currently supports two extreme levels of high ((decide per minute)
+yes thats right, in glorious conditions it could technically
+execute 1440 trades a day... at a higher percentage of the users account)
+and low (decide per day). In the future I would probably have the 
+NN control which strategy it's using depending on the volitility and past performance 
+of the market. Anyway, if you choose this option the program will take the risk level 
+you chose and query the exchange in realtime to either create a database of time periods
+split according to the risk level, (price data for each minute, day, etc) or update one 
+if it already exists. It does this by comparing the time of the last record stored 
+with current market time to determine how many records it needs to download to be 
+up to date. After this the data is processed, features are created and fed into a neural 
+network which then determines if it should buy or sell using binary classification.
+The program then pulls real user account data to compare against the neural networks 
+decision and either closes a trade, opens a trade or does nothing depending on what 
+trade the user is already in. 
+
+You can also choose to automate this process to have it running 24/7, updating according
+to the risk level selected, which you can change at any time. If you want to turn it off,
+there is functionality to force close trades so you are no longer at risk as well as
+a simulation mode to view the performance of the neural net on the market for the 
+last x decisions (currently hard set to 500 for the purpose of the competition)
 
 When I started this project, the idea was so simple in my head... I started writting
 the first few modules, the database, the neural net, the features... then the scope
@@ -21,97 +57,60 @@ creep kicked in and all of a sudden it turned into some kind of mash of duct tap
 and rubber bands in an attempt to just get all the basic functionality in. I hope to remedy some of the
 poor design choice I choose to use along the way. This project taught
 me more about what not to do instead of what to do, but learning is learning.
-<br>
+<br><br>
 UPDATE: Feels less like rubber bands and duct tape just 4 days later, 
 still structual problems that can be fixed with a little more time and refactoring
-<br>
-UPDATE: Feels like the greatest ball of duct taped rubber bands to ever exist 2 days later...
-<br>
+<br><br>
+UPDATE: Feels like biggest ball of duct taped rubber bands to ever exist 2 days later...
+<br><br>
 UPDATE: Refactored some core elements.... everything is under control.
-<br>
-
-## How it does what it does
-
-Initially a user is asked for credentials to trade i.e an api key and the secret, if they
-have already provided one, the program will automatically read the .env file, otherwise they will have 
-to fill out the api information. The program will then read the user log file (or create one if one with default values if it doesn't exist) 
-for the strategy writtin within and send that to the database. The strategy is a timeframe that 
-the market trades on i.e 1minute, 5minute, 1hour, Day, etc. The database then either creates a 
-file for that strategy/timeframe or reads it in if it already exists. The database compares the last
-record it has to the realtime market and if the time stamps don't match, then it downloads
-the missing data to complete its records. 
-
-This database file is then used to create a set of features for the neural net to 
-train on. Once trained the program then executes a prediction on the current market 
-data and returns either a buy or sell event. Depending on if the event agrees or 
-disagrees with what the users account is currently doing, it will then either 
-1. Do nothing (agrees)
-2. Closes trade and opens another on the opposide side of the market(disagrees)
-3. Or opens a trade as there is currently no trade active.
-
-All of this is controlled by the program and the neural net, the user doesn't have to 
-do anything. The user can choose to change which ever strategy is being used to trade
-though, currently only high and low risk straties exist. Each has subtle differences. 
-Low risk looks at the daily time frame and can really only make one trade a day, it 
-also uses a smaller percentage of the users account per trade. High risk looks at 
-the 1minute time frame... yes thats right, in glorious conditions it could technically
-execute 1440 trades a day... at a higher percentage of the users account. In the future
-I would probably have the NN control which strategy it's using depending on the volitility
-and past performance of the market. 
-
-UPDATE: AUTOMATION IS NOW ACTIVE<br>
-You can also select to turn on automation, this will have the NN update the database,
-retrain and make a new prediction for each time period that passes that matches the 
-current strategy... I know, sounds confusing, but it's simple. If you current have high
-risk strategy selected, then that corresponds to make a decision each minute, meaning 
-the NN will also retrain and make a decision each minute, this is true for any other 
-time frame. As of writting this only low and high risk with time frames of 1 day and 1 minute
-exist. To exit automation mode all you have to do is hit the enter key. 
-
-That's it, the project is far from perfect, there are alot of problems to fix, modules 
-to refactor and features to add. Feedback is very welcome, i'm new to developing programs, 
-using machine learning... computer science in general, the whole reason I entered this 
-competition was to see where I was at after one year of studying. Enjoy. 
-<br>
-UPDATE: Extra features like force closing a position & reviewing current position 
-are now available.
 <br>
 
 ## How to run
 
 - Open up a terminal
 - Navigate to a directory you are happy cloning the project too
-- Type or copy & paste everything on the below line <br>
+- Type or copy & paste everything on the below line:<br>
 git clone https://github.com/Mokoto-K/une-ai-competition.git une-ai-competition-winning-entry
-- After the repo is cloned successfully you'll want to set up a virtual environment for python, you can do this in the terminal 
-by typing:<br> python -m venv .venv <br>
-you may need to use python3 instead of python. f you have any trouble running the python command, 
-visit python.org for more information on how to update your python distribution on your selected system.
-- To activate the environment you then need to run <br>
+- After the repo is cloned successfully you'll want to set up a virtual environment 
+for python, you can do this in the terminal by typing:<br> 
+python -m venv .venv <br>
+You may need to use python3 instead of python depending on how your system is set up. 
+If you have any trouble running the python command, visit python.org for more information 
+on how to update your python distribution on your selected system.
+- To activate the environment you then need to run: <br>
 Linux/Mac: source .venv/bin/activate <br>
 Windows(depends on your shell):   .\\.venv\Scripts\activate.bat <br>
 Apparently this doesn't work for vscode if you're into that kind of thing...
 - Next you will need to install the requirements, you can do this with one of the following
-commands. <br>
+commands: <br>
 pip install -r requirements.txt
 pip3 install -r requirements.txt
 - Now just run python main.py or python3 main.py
-- To run the real account function (which is running on testnet) you will have to enter an api key and secret the first time when are prompted, below I have provided one for the purpose of the competition:<br>
+- To run the real account function (which is running on testnet) you will have to 
+enter an api key and secret the first time when are prompted, below I have provided 
+one for the purpose of the competition:<br>
 api key = ZJvzXJ4WEpphUlVTiw<br>
 secret = NuvY5NftCiBlZuoWPmi7ozyxI2I8lugrY4vx<br>
 Don't worry it's just a test account for the competition, these keys arn't important.
+<br><br>
 There is one risk with sharing an api for this contest and that is the program will 
 probably exhibit some weird behaviour if multiple people start running it with the 
 same key. There is no fix for this as multiple people should not have your api key 
-and secret. This is a known risk that is necessary for the contest and the contest only<br>
+and secret. This is a known risk that is necessary for the contest and the contest only
+and I don't think it will cause any serious issues with the programs functionality...<br><br>
 If you wish to make your own test account you can do so here: <br>
 https://testnet.bybit.com/en/ <br>
-Just remember to request currency to fund your account before trying to use the account with this program.
-<br>
-If you wish to view the account that is connected to the program you can go here and log in using these details:<br>
-https://testnet.bybit.com/trade/usdt/BTCUSDT <br>
+Just remember to request currency to fund your account before trying to use the 
+account with this program  as well as apply for an api... it's slightly annoying 
+to do so that's why one has been provided for the competitions judges.
+<br><br>
+If you wish to view the account that is connected to the program you can go here
+and log in using these details:<br>
+Login page: https://testnet.bybit.com/en/login <br>
 Email: une.ai.competition@gmail.com <br>
 Password: Uneaicompetition1<br>
+Trading Page: https://testnet.bybit.com/trade/usdt/BTCUSDT <br>
 
 - Welcome to losing your retirement... house... family, everything really<br>
 You'll have nothing, and you'll be happy.
@@ -120,18 +119,19 @@ You'll have nothing, and you'll be happy.
 
 - Bitcoin trades 24/7 so for a competition where I have no idea when someone may run
 the program, I need it to be able to produce results. Normal markets have open and 
-close times as well as are only open monday to friday. I'm only using bitcoin for 
+close times as well as mostly only open monday to friday. I'm only using bitcoin for 
 simplicities sake as a proof of concept, pulling this idea off at scale would be
 a very expensive task requiring access to many different assets and platforms which
-often require strict barriers of to entry.
+often require strict barriers of entry and with market data fetching high prices.
 - Bybit is a simple exchange that can do everything I need for this project, they store 
 all historical data (for the last 1000 time periods of your choice) it's free to 
 start an account and use the data, no barrier to entry and a fully functional api 
-to build products off. These arn't commonly free things in the world of finance.
+to build products off. These arn't commonly free things in the world of finance. 
+Bybit also has a testnet with a fully intergrated api (even though it does have its flaws)
 - These are the main reasons why i've chosen to scale down my original idea and use
 just this one asset and this one exchange for the project.
 
-## Known problems
+## Known problems 
 
 - The entire project, it's one giant problem that weighs me down at night...
 - There is a market security mechanism on bybits end which stops market orders for executing
@@ -143,7 +143,7 @@ We have no control over this and you can't force an order through, this is a pro
 on bybits end. So sometimes a full position wont get closed and will close the next time
 the nn makes a decision.
 
-## Extra Information
+## Extra Information (redundant information at this point)
 I'll add more to this as I think of things
 
 - The simulation is just the ai predicting over the last x days (set to 100 at the 
@@ -157,13 +157,40 @@ So High risk is the one minute data stream, so technically it could be buying an
 selling every other minute. The low risk option is pointing the nn to train on 
 the daily data stream which updates at 00:00 UTC each day.
 
-- 
+## Future features 
 
+I have alot of ideas on how to make this program alot better, i'm not sure on the 
+validity of them all or just how possible they are, i'd need to learn more about 
+neural nets and markets to know the full scope of what I could achieve. That being 
+said, the program files are littered with TODOs and ideas that I didn't get around 
+to fixing/finishing/implementing. Some main ones are:
+
+- Strategy control decided by Neural net using performance and volitility to decide 
+with more flexibility on how much risk and when to deploy it.
+- Using CNNs and RNNs to process sentiment online such as bloomberg terminal
+updates, news outlets and X to better understand what is happening in the market 
+as well as time series processing of our data (cuz ya know... what happened a minute 
+ago is probably important for the next minute)
+- Processing not only multiple assets but also asset classes for better control 
+and management of finances, this would greatly reduce the risks that are currently 
+taken.
+- Extra order features like take profits and stop losses to maximise potential 
+profits and minimize losses, or atleast better define the risk.
+- Ability to connect to multiple exchanges, this idea is kind of a work in progress
+because... why not just be the gateway, this is tricky because you esseentially 
+are just becoming the middle man. But really what i'm saying is, a user connects 
+their money to your service, that has access to all these markets and has a NN 
+making decisions for them... Not exactly what currently exist in the traditional 
+finance world, but also not exactly what exists in the new defi world. I don't know 
+I haven't thought about it enough.
+- Better history logging or all trades instead of leaning on the exchanges history
+- More features to train on such as more staple market proven indicators like MACD,
+RSI, insider trading, all your favourites. No but seriously more research into 
+what makes markets tick to take more of the randomness out of this process.:w
+ 
 <hr>
 
 ## Programming log
-
-<hr>
 
 #### 5th of January, 2025
 In an ideal world I would have more time to implement my idea(s) for this 
@@ -304,3 +331,7 @@ A few minor display changes implemented after getting some "non tech savy" peopl
 to try run the program.... we call that... r n d bby. Other than that, just slight 
 changes to the documentation and writing up the 500 word  description. I will submit
 it tomorrow in its current form.
+
+#### 20th of January, 2025
+Alright, 12ish solid days of work, one idea... kinda executed... Just fixing typos 
+and minor display problems/differences... and editing the readme.

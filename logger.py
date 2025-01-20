@@ -17,14 +17,18 @@ def write_log_file(strategy: str = "D - Low Risk", direction: str = "None",
 def read_log_file():
     
     log_vars = []
-    
-    with open("user_log.txt", "r") as file:
-        lines = file.readlines()
-        for line in lines:
-            log_vars.append(line.split(":")[1].strip(" ").strip("\n"))
+         
+    try:
+        with open("user_log.txt", "r") as file:
+            lines = file.readlines()
+            for line in lines:
+                log_vars.append(line.split(":")[1].strip(" ").strip("\n"))
 
-    return log_vars
-   
+        return log_vars
+    except FileNotFoundError:
+        print("Your user log file appears to have dissappeared, reopen the program to start again")
+        exit(0)
+
 
 # Needed to then print the logs..so much duplicate code to refactor
 def print_log():

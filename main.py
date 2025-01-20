@@ -1,4 +1,5 @@
 # TODO - Look through all modules todo lists, add types and documentation 
+# TODO - log files and database files should probably be hidden dot files... dunno
 import os
 import time
 import logger
@@ -145,7 +146,6 @@ def update_trade() -> None:
     # Reads current risk from log file and returns the nn's decision
     decision:str = build_strategy(logger.read_log_file()[0])
     # Passes the decision into the main logic conditional
-    # take_action(decision)
     execute_trade_logic(decision)
 
 
@@ -264,7 +264,7 @@ def validate_env() -> None:
 
             with open(".env", "w") as file:
                 api_key: str = input("Please enter your api key:\n")
-                api_secret: str = input("Please enter you api secret:\n")
+                api_secret: str = input("Please enter your api secret:\n")
 
                 print(f"{'-'*55}\nCREATING AUTHENTICATION LINK\n{'-'*55}")
                 # TODO - protec the keys!! nice plain text storage.
@@ -296,8 +296,8 @@ if __name__ == "__main__":
         logger.write_log_file()
     
     risk_map: dict = {"question": "\nEnter the risk strategy you would like to take:\n" +
-        "Press 'h' for high risk\n" + 
-        "Press 'l' for low risk\n\n" + ">> ", 
+        "Press 'h' for high risk (Minute by Minute decisions)\n" + 
+        "Press 'l' for low risk (Day by Day decisions)\n\n" + ">> ", 
                 "answers": {"h": "1 - High risk", "l": "D - Low risk"}}
 
     position_map: dict = {"Buy": "Long", "Sell": "Short", "": "-"}
