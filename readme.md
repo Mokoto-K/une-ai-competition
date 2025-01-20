@@ -82,7 +82,7 @@ are now available.
 - Open up a terminal
 - Navigate to a directory you are happy cloning the project too
 - Type or copy & paste everything on the below line <br>
-https://github.com/Mokoto-K/une-ai-competition.git une-ai-competition-winning-entry
+git clone https://github.com/Mokoto-K/une-ai-competition.git une-ai-competition-winning-entry
 - After the repo is cloned successfully you'll want to set up a virtual environment for python, you can do this in the terminal 
 by typing:<br> python -m venv .venv <br>
 you may need to use python3 instead of python. f you have any trouble running the python command, 
